@@ -1,0 +1,351 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Development Demo Exam (HTML/CSS/JS)</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --success: #16a34a;
+            --error: #dc2626;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text: #0f172a;
+            --border: #e2e8f0;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.5;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: var(--card-bg);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .timer {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: var(--error);
+            background: #fee2e2;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+        }
+
+        main {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .section-title {
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 0.5rem;
+            margin-top: 3rem;
+            color: var(--primary);
+        }
+
+        .question-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+
+        .question-text {
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .options-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .option-item {
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: 0.375rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .option-item:hover {
+            background-color: #f1f5f9;
+        }
+
+        .option-item input {
+            margin-right: 1rem;
+            transform: scale(1.2);
+        }
+
+        .btn-submit {
+            display: block;
+            width: 100%;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 1rem;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            margin-top: 2rem;
+            transition: background 0.2s;
+        }
+
+        .btn-submit:hover {
+            background-color: var(--primary-hover);
+        }
+
+        #results {
+            display: none;
+            background: #dcfce7;
+            border: 2px solid var(--success);
+            color: #14532d;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            margin-bottom: 2rem;
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .correct {
+            background-color: #dcfce7 !important;
+            border-color: var(--success) !important;
+            color: #14532d;
+        }
+
+        .incorrect {
+            background-color: #fee2e2 !important;
+            border-color: var(--error) !important;
+            color: #7f1d1d;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div>
+            <h1 style="margin:0; font-size: 1.5rem;">Web Dev Full Exam</h1>
+            <p style="margin:0; color: #64748b;">HTML, CSS, & JavaScript (65 Questions)</p>
+        </div>
+        <div class="timer" id="timerDisplay">Time Left: 60:00</div>
+    </header>
+
+    <main>
+        <div id="results"></div>
+        <form id="quizForm">
+            <div id="quizContainer"></div>
+            <button type="submit" class="btn-submit">Submit Exam</button>
+        </form>
+    </main>
+
+    <script>
+        const questions = [
+            // HTML Section (1-20)
+            { id: 1, section: "HTML", q: "What does HTML stand for?", o: ["Hyper Text Markup Language", "Home Tool Markup Language", "Hyperlinks and Text Markup Language", "High Tech Markup Language"], a: 0 },
+            { id: 2, section: "HTML", q: "Who is making the Web standards?", o: ["Mozilla", "Microsoft", "The World Wide Web Consortium (W3C)", "Google"], a: 2 },
+            { id: 3, section: "HTML", q: "Choose the correct HTML element for the largest heading:", o: ["<heading>", "<h6>", "<h1>", "<head>"], a: 2 },
+            { id: 4, section: "HTML", q: "What is the correct HTML element for inserting a line break?", o: ["<break>", "<lb>", "<br>", "<next>"], a: 2 },
+            { id: 5, section: "HTML", q: "What is the correct HTML for adding a background color?", o: ["<body bg=\"yellow\">", "<body style=\"background-color:yellow;\">", "<background>yellow</background>", "<body color=\"yellow\">"], a: 1 },
+            { id: 6, section: "HTML", q: "Choose the correct HTML element to define important text:", o: ["<strong>", "<i>", "<important>", "<bdo>"], a: 0 },
+            { id: 7, section: "HTML", q: "Choose the correct HTML element to define emphasized text:", o: ["<italic>", "<em>", "<i>", "<emp>"], a: 1 },
+            { id: 8, section: "HTML", q: "What is the correct HTML for creating a hyperlink?", o: ["<a href=\"http://www.w3schools.com\">W3Schools</a>", "<a name=\"\">W3Schools.com</a>", "<a>http://www.w3schools.com</a>", "<a url=\"\">W3Schools.com</a>"], a: 0 },
+            { id: 9, section: "HTML", q: "Which character is used to indicate an end tag?", o: ["*", "<", "^", "/"], a: 3 },
+            { id: 10, section: "HTML", q: "How can you open a link in a new tab/browser window?", o: ["<a href=\"url\" target=\"new\">", "<a href=\"url\" target=\"_blank\">", "<a href=\"url\" new>", "<a href=\"url\" target=\"_parent\">"], a: 1 },
+            { id: 11, section: "HTML", q: "Which of these elements are all <table> elements?", o: ["<table><head><tfoot>", "<table><tr><td>", "<table><tr><tt>", "<thead><body><tr>"], a: 1 },
+            { id: 12, section: "HTML", q: "Inline elements are normally displayed without starting a new line.", o: ["True", "False"], a: 0 },
+            { id: 13, section: "HTML", q: "How can you make a numbered list?", o: ["<ul>", "<ol>", "<list>", "<dl>"], a: 1 },
+            { id: 14, section: "HTML", q: "How can you make a bulleted list?", o: ["<ol>", "<list>", "<ul>", "<dl>"], a: 2 },
+            { id: 15, section: "HTML", q: "What is the correct HTML for making a checkbox?", o: ["<check>", "<input type=\"checkbox\">", "<checkbox>", "<input type=\"check\">"], a: 1 },
+            { id: 16, section: "HTML", q: "What is the correct HTML for making a text input area?", o: ["<input type=\"textbox\">", "<input type=\"text\">", "<textinput>", "<textarea>"], a: 1 },
+            { id: 17, section: "HTML", q: "What is the correct HTML for inserting an image?", o: ["<image src=\"image.gif\" alt=\"MyImage\">", "<img href=\"image.gif\" alt=\"MyImage\">", "<img src=\"image.gif\" alt=\"MyImage\">", "<img alt=\"MyImage\">image.gif</img>"], a: 2 },
+            { id: 18, section: "HTML", q: "What is the correct HTML for inserting a comment?", o: ["", "' Comment", "// Comment", "<comment>Comment</comment>"], a: 0 },
+            { id: 19, section: "HTML", q: "Which HTML element defines the title of a document?", o: ["<meta>", "<head>", "<title>", "<header>"], a: 2 },
+            { id: 20, section: "HTML", q: "Which HTML attribute specifies an alternate text for an image, if the image cannot be displayed?", o: ["title", "src", "longdesc", "alt"], a: 3 },
+
+            // CSS Section (21-40)
+            { id: 21, section: "CSS", q: "What does CSS stand for?", o: ["Creative Style Sheets", "Cascading Style Sheets", "Computer Style Sheets", "Colorful Style Sheets"], a: 1 },
+            { id: 22, section: "CSS", q: "What is the correct HTML shortcut for referring to an external style sheet?", o: ["<style src=\"mystyle.css\">", "<link rel=\"stylesheet\" type=\"text/css\" href=\"mystyle.css\">", "<stylesheet>mystyle.css</stylesheet>", "<link href=\"mystyle.css\">"], a: 1 },
+            { id: 23, section: "CSS", q: "Where in an HTML document is the correct place to refer to an external style sheet?", o: ["In the <body> section", "At the end of the document", "In the <head> section", "Inside the <html> tag"], a: 2 },
+            { id: 24, section: "CSS", q: "Which HTML tag is used to define an internal style sheet?", o: ["<css>", "<script>", "<style>", "<div style=\"\">"], a: 2 },
+            { id: 25, section: "CSS", q: "Which HTML attribute is used to define inline styles?", o: ["class", "styles", "font", "style"], a: 3 },
+            { id: 26, section: "CSS", q: "Which is the correct CSS syntax?", o: ["body {color: black;}", "{body;color:black;}", "body:color=black;", "{body:color=black;}"], a: 0 },
+            { id: 27, section: "CSS", q: "How do you insert a comment in a CSS file?", o: ["// this is a comment", "/* this is a comment */", "' this is a comment", "// this is a comment //"], a: 1 },
+            { id: 28, section: "CSS", q: "Which property is used to change the background color?", o: ["color", "bgcolor", "background-color", "background:color"], a: 2 },
+            { id: 29, section: "CSS", q: "How do you add a background color for all <h1> elements?", o: ["h1.all {background-color:#FFFFFF;}", "h1 {background-color:#FFFFFF;}", "all.h1 {background-color:#FFFFFF;}", "h1 {bg-color:#FFFFFF;}"], a: 1 },
+            { id: 30, section: "CSS", q: "Which CSS property is used to change the text color of an element?", o: ["text-color", "fgcolor", "color", "font-color"], a: 2 },
+            { id: 31, section: "CSS", q: "Which CSS property controls the text size?", o: ["text-style", "font-size", "text-size", "font-style"], a: 1 },
+            { id: 32, section: "CSS", q: "What is the correct CSS syntax for making all the <p> elements bold?", o: ["p {font-weight:bold;}", "p {text-size:bold;}", "<p style=\"font-size:bold;\">", "p {font:bold;}"], a: 0 },
+            { id: 33, section: "CSS", q: "How do you display hyperlinks without an underline?", o: ["a {text-decoration:none;}", "a {text-underline:none;}", "a {underline:none;}", "a {decoration:no-underline;}"], a: 0 },
+            { id: 34, section: "CSS", q: "How do you make each word in a text start with a capital letter?", o: ["text-transform:capitalize", "text-style:capitalize", "You cannot do that with CSS", "text-transform:uppercase"], a: 0 },
+            { id: 35, section: "CSS", q: "Which property is used to change the font of an element?", o: ["font-style", "font-weight", "font-family", "font-type"], a: 2 },
+            { id: 36, section: "CSS", q: "How do you make the text bold?", o: ["font:bold;", "font-weight:bold;", "style:bold;", "font-size:bold;"], a: 1 },
+            { id: 37, section: "CSS", q: "How do you display a border like this: Top border = 10px, Bottom border = 5px, Left border = 20px, Right border = 1px?", o: ["border-width:10px 1px 5px 20px;", "border-width:10px 20px 5px 1px;", "border-width:10px 5px 20px 1px;", "border-width:5px 20px 10px 1px;"], a: 0 },
+            { id: 38, section: "CSS", q: "Which property is used to change the left margin of an element?", o: ["padding-left", "margin-left", "indent", "margin-padding-left"], a: 1 },
+            { id: 39, section: "CSS", q: "When using the padding property; are you allowed to use negative values?", o: ["Yes", "No"], a: 1 },
+            { id: 40, section: "CSS", q: "How do you select an element with id 'demo'?", o: [".demo", "#demo", "*demo", "demo"], a: 1 },
+
+            // JavaScript Section (41-65)
+            { id: 41, section: "JavaScript", q: "Inside which HTML element do we put the JavaScript?", o: ["<js>", "<scripting>", "<script>", "<javascript>"], a: 2 },
+            { id: 42, section: "JavaScript", q: "What is the correct HTML syntax for referring to an external script called 'xxx.js'?", o: ["<script href=\"xxx.js\">", "<script name=\"xxx.js\">", "<script src=\"xxx.js\">", "<script file=\"xxx.js\">"], a: 2 },
+            { id: 43, section: "JavaScript", q: "How do you write 'Hello World' in an alert box?", o: ["msgBox(\"Hello World\");", "alertBox(\"Hello World\");", "msg(\"Hello World\");", "alert(\"Hello World\");"], a: 3 },
+            { id: 44, section: "JavaScript", q: "How do you create a function in JavaScript?", o: ["function = myFunction()", "function myFunction()", "function:myFunction()", "new function()"], a: 1 },
+            { id: 45, section: "JavaScript", q: "How do you call a function named 'myFunction'?", o: ["call myFunction()", "myFunction()", "call function myFunction()", "execute myFunction()"], a: 1 },
+            { id: 46, section: "JavaScript", q: "How to write an IF statement in JavaScript?", o: ["if i = 5 then", "if i == 5 then", "if (i == 5)", "if i = 5"], a: 2 },
+            { id: 47, section: "JavaScript", q: "How to write an IF statement for executing some code if 'i' is NOT equal to 5?", o: ["if (i <> 5)", "if i <> 5", "if (i != 5)", "if i =! 5 then"], a: 2 },
+            { id: 48, section: "JavaScript", q: "How does a WHILE loop start?", o: ["while i = 1 to 10", "while (i <= 10)", "while i <= 10 into", "loop while (i <= 10)"], a: 1 },
+            { id: 49, section: "JavaScript", q: "How does a FOR loop start?", o: ["for (i = 0; i <= 5; i++)", "for (i <= 5; i++)", "for i = 1 to 5", "for (i = 0; i <= 5)"], a: 0 },
+            { id: 50, section: "JavaScript", q: "How can you add a comment in a JavaScript?", o: ["' This is a comment", "", "// This is a comment", "* This is a comment"], a: 2 },
+            { id: 51, section: "JavaScript", q: "What is the correct way to write a JavaScript array?", o: ["var colors = 1 = ('red'), 2 = ('green'), 3 = ('blue')", "var colors = (1:'red', 2:'green', 3:'blue')", "var colors = ['red', 'green', 'blue']", "var colors = 'red', 'green', 'blue'"], a: 2 },
+            { id: 52, section: "JavaScript", q: "How do you round the number 7.25, to the nearest integer?", o: ["round(7.25)", "Math.rnd(7.25)", "Math.round(7.25)", "rnd(7.25)"], a: 2 },
+            { id: 53, section: "JavaScript", q: "How do you find the number with the highest value of x and y?", o: ["Math.max(x, y)", "ceil(x, y)", "Math.ceil(x, y)", "top(x, y)"], a: 0 },
+            { id: 54, section: "JavaScript", q: "What is the correct JavaScript syntax for opening a new window called 'w3s'?", o: ["w3s = window.open('http://www.w3schools.com');", "w3s = window.new('http://www.w3schools.com');", "w3s = window.create('http://www.w3schools.com');", "window.load('http://www.w3schools.com', 'w3s');"], a: 0 },
+            { id: 55, section: "JavaScript", q: "JavaScript is the same as Java.", o: ["True", "False"], a: 1 },
+            { id: 56, section: "JavaScript", q: "How can you detect the client's browser name?", o: ["client.navName", "browser.name", "navigator.appName", "window.browser"], a: 2 },
+            { id: 57, section: "JavaScript", q: "Which event occurs when the user clicks on an HTML element?", o: ["onmouseclick", "onchange", "onmouseover", "onclick"], a: 3 },
+            { id: 58, section: "JavaScript", q: "How do you declare a JavaScript variable?", o: ["variable carName;", "v carName;", "var carName;", "string carName;"], a: 2 },
+            { id: 59, section: "JavaScript", q: "Which operator is used to assign a value to a variable?", o: ["*", "-", "=", "x"], a: 2 },
+            { id: 60, section: "JavaScript", q: "What will the following code return: Boolean(10 > 9)", o: ["true", "false", "NaN", "undefined"], a: 0 },
+            { id: 61, section: "JavaScript", q: "Is JavaScript case-sensitive?", o: ["Yes", "No"], a: 0 },
+            { id: 62, section: "JavaScript", q: "Which built-in method returns the length of the string?", o: ["length()", "size()", "index()", "None of the above (it's a property: .length)"], a: 3 },
+            { id: 63, section: "JavaScript", q: "Which closure syntax is used to define an arrow function?", o: ["() => {}", "function() => {}", "-> {}", "def()"], a: 0 },
+            { id: 64, section: "JavaScript", q: "What is the result of '5' + 5 in JavaScript?", o: ["10", "55", "Error", "NaN"], a: 1 },
+            { id: 65, section: "JavaScript", q: "Which method removes the last element from an array?", o: ["pop()", "push()", "shift()", "unshift()"], a: 0 }
+        ];
+
+        const container = document.getElementById('quizContainer');
+
+        let currentSection = "";
+        questions.forEach((item, index) => {
+            if (currentSection !== item.section) {
+                currentSection = item.section;
+                const sectionHeader = document.createElement('h2');
+                sectionHeader.className = 'section-title';
+                sectionHeader.innerText = `${currentSection} Section`;
+                container.appendChild(sectionHeader);
+            }
+
+            const card = document.createElement('div');
+            card.className = 'question-card';
+            card.id = `q-card-${index}`;
+
+            const qText = document.createElement('div');
+            qText.className = 'question-text';
+            
+            // Using textContent safely prints raw HTML snippet tokens without confusing the rendering DOM
+            qText.textContent = `${index + 1}. ${item.q}`;
+            card.appendChild(qText);
+
+            const optionsUl = document.createElement('ul');
+            optionsUl.className = 'options-list';
+
+            item.o.forEach((option, oIdx) => {
+                const li = document.createElement('li');
+                li.className = 'option-item';
+                li.id = `opt-${index}-${oIdx}`;
+                
+                const radio = document.createElement('input');
+                radio.type = 'radio';
+                radio.name = `question-${index}`;
+                radio.value = oIdx;
+                radio.id = `radio-${index}-${oIdx}`;
+
+                const label = document.createElement('label');
+                label.htmlFor = `radio-${index}-${oIdx}`;
+                label.textContent = option;
+                label.style.cursor = 'pointer';
+                label.style.width = '100%';
+
+                li.appendChild(radio);
+                li.appendChild(label);
+                optionsUl.appendChild(li);
+            });
+
+            card.appendChild(optionsUl);
+            container.appendChild(card);
+        });
+
+        // 60-Minute Countdown Timer
+        let timeLeft = 60 * 60; 
+        const timerDisplay = document.getElementById('timerDisplay');
+        const timerInterval = setInterval(() => {
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                timerDisplay.innerText = "Time's up!";
+                handleSubmit(new Event('submit'));
+            } else {
+                timeLeft--;
+                let minutes = Math.floor(timeLeft / 60);
+                let seconds = timeLeft % 60;
+                timerDisplay.innerText = `Time Left: ${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            }
+        }, 1000);
+
+        function handleSubmit(e) {
+            e.preventDefault();
+            clearInterval(timerInterval);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            let score = 0;
+            const form = document.getElementById('quizForm');
+            const formData = new FormData(form);
+
+            questions.forEach((item, index) => {
+                const selectedAnswer = formData.get(`question-${index}`);
+                const correctAnswerIdx = item.a;
+
+                document.getElementById(`opt-${index}-${correctAnswerIdx}`).classList.add('correct');
+
+                if (selectedAnswer !== null) {
+                    const selectedIdx = parseInt(selectedAnswer);
+                    if (selectedIdx === correctAnswerIdx) {
+                        score++;
+                    } else {
+                        document.getElementById(`opt-${index}-${selectedIdx}`).classList.add('incorrect');
+                    }
+                }
+                
+                item.o.forEach((_, oIdx) => {
+                    document.getElementById(`radio-${index}-${oIdx}`).disabled = true;
+                });
+            });
+
+            const resultsDiv = document.getElementById('results');
+            const percentage = ((score / questions.length) * 100).toFixed(1);
+            resultsDiv.innerHTML = `Exam Completed!<br>Your Score: ${score} / ${questions.length} (${percentage}%)`;
+            resultsDiv.style.display = 'block';
+            
+            document.querySelector('.btn-submit').disabled = true;
+            document.querySelector('.btn-submit').style.opacity = '0.5';
+            document.querySelector('.btn-submit').innerText = "Exam Evaluated";
+        }
+
+        document.getElementById('quizForm').addEventListener('submit', handleSubmit);
+    </script>
+</body>
+</html>

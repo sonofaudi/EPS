@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Portal | KASU Proctoring</title>
+    <link rel="stylesheet" href="../css/login.css">
+    <script src="../js/auth/admin-login.js" defer></script>
+</head>
+<body>
+
+    <div class="verification-container">
+        
+        <header class="brand-header">
+            <img src="assets/logo.png" alt="KASU Logo" width="80" onerror="this.style.display='none'">
+            <h1>Examination Proctoring System</h1>
+            <h2>Administrative Sign In</h2>
+        </header>
+
+        <main>
+            <p class="form-instruction" style="border-left-color: #A30000;">
+                Authorized personnel only. Please sign in with your administrator credentials to manage proctoring sessions.
+            </p>
+
+            <div id="server-error" style="background-color: #fce8e6; color: #c5221f; border-color: #fad2cf;">
+                ❌ Invalid admin credentials or access denied.
+            </div>
+
+            <form id="adminLoginForm" onsubmit="handleAdminLogin(event)">
+                
+                <div class="form-group">
+                    <label for="email">Admin Email</label>
+                    <input type="email" id="email" placeholder="admin@kasu.edu.ng" autocomplete="off">
+                    <div id="email-feedback" class="feedback"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="fullName">Staff Full Name</label>
+                    <input type="text" id="fullName" placeholder="e.g., Prof. Adamu Musa" autocomplete="off">
+                    <div id="fullName-feedback" class="feedback"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Security Password</label>
+                    <input type="password" id="password" placeholder="••••••••" autocomplete="off">
+                    <div id="password-feedback" class="feedback"></div>
+                </div>
+
+                <button type="submit" id="continueBtn" class="btn-continue" disabled>Secure Login</button>
+            </form>
+        </main>
+    </div>
+
+    <footer>
+        &copy; Kaduna State University<br>
+        Examination Proctoring System (Admin Console)<br>
+        Version 1.0
+    </footer>
+
+</body>
+</html>

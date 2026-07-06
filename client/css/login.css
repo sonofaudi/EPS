@@ -1,0 +1,181 @@
+        /* Reset & Base Styles */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f4f7f6;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        /* Container Card */
+        .verification-container {
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            width: 100%;
+            max-width: 460px;
+            padding: 35px 30px;
+            text-align: center;
+        }
+
+        /* Branding Styles */
+        .brand-header img {
+            margin-bottom: 8px;
+        }
+
+        .brand-header h1 {
+            font-size: 1.1rem;
+            color: #666666;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+
+        .brand-header h2 {
+            font-size: 1.4rem;
+            color: #0d5c3a; /* KASU Official Green */
+            margin-bottom: 25px;
+            font-weight: 700;
+        }
+
+        /* Instructions */
+        .form-instruction {
+            font-size: 0.85rem;
+            color: #555555;
+            margin-bottom: 25px;
+            line-height: 1.4;
+            text-align: left;
+            background-color: #f9f9f9;
+            padding: 12px;
+            border-left: 4px solid #0d5c3a;
+            border-radius: 4px;
+        }
+
+        /* Form Layout */
+        .form-group {
+            text-align: left;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #333333;
+            margin-bottom: 6px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid #cccccc;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        /* Input States */
+        .form-group input:focus {
+            border-color: #0d5c3a;
+            box-shadow: 0 0 0 3px rgba(13, 92, 58, 0.1);
+        }
+
+        .form-group input.invalid {
+            border-color: #d93025;
+            background-color: #fff8f8;
+        }
+
+        /* Validation Feedback Messages */
+        .feedback {
+            font-size: 0.8rem;
+            margin-top: 5px;
+            display: none;
+            font-weight: 500;
+        }
+
+        .feedback.error {
+            color: #d93025;
+            display: block;
+        }
+
+        .feedback.success {
+            color: #188038;
+            display: block;
+        }
+
+        /* Global Server Error Banner */
+        #server-error {
+            background-color: #fce8e6;
+            color: #c5221f;
+            border: 1px solid #fad2cf;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 20px;
+            display: none;
+            text-align: left;
+        }
+
+        /* Action Button */
+        .btn-continue {
+            width: 100%;
+            padding: 14px;
+            background-color: #0d5c3a;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            margin-top: 10px;
+        }
+
+        .btn-continue:hover:not(:disabled) {
+            background-color: #09442a;
+        }
+
+        .btn-continue:disabled {
+            background-color: #cccccc;
+            color: #888888;
+            cursor: not-allowed;
+        }
+
+        /* Footer Styles */
+        footer {
+            margin-top: 25px;
+            text-align: center;
+            font-size: 0.75rem;
+            color: #777777;
+            line-height: 1.5;
+        }
+/* Loading State Animation */
+.btn-continue.loading {
+    background-color: #09442a !important; /* Locks into darker green */
+    cursor: wait;
+    animation: pulseLoading 1.5s infinite ease-in-out;
+}
+
+@keyframes pulseLoading {
+    0% {
+        opacity: 1.0;
+    }
+    50% {
+        opacity: 0.6;
+    }
+    100% {
+        opacity: 1.0;
+    }
+}
