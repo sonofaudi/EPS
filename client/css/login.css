@@ -167,6 +167,44 @@
     cursor: wait;
     animation: pulseLoading 1.5s infinite ease-in-out;
 }
+.btn {
+        width: 40%;
+        padding: 10px;
+        background-color: #009ece;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+        margin-top: 10px;
+        }
+.btn:hover {
+        background-color: #09b068;
+        }
+
+
+     /* The parent container handles the grid layout */
+.status-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-rows: repeat(2, minmax(0, 1fr));
+    gap: 10px;        /* Spacing between the items */
+    margin: 15px 0;   /* Spacing above and below the grid block */
+}
+
+/* The individual items inside the grid */
+.status-row {
+    font-size: 0.85rem;
+    padding: 8px;
+    border-radius: 4px;
+    background-color: #f9f9f9;
+    /* Remove the 'margin: 8px 0;' so it doesn't mess with the grid layout */
+}
+
+
+
 
 @keyframes pulseLoading {
     0% {

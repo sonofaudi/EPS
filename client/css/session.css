@@ -1,0 +1,45 @@
+        .verification-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        @media (max-width: 768px) {
+            .verification-layout { grid-template-columns: 1fr; }
+        }
+        .proctor-panel {
+            background: #d5d5ff4f;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 20px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .proctor-panel.disabled {
+            opacity: 0.4;
+            pointer-events: none;
+            background: #f8fafc;
+        }
+        .profile-card {
+            background: #f1f5f9;
+            padding: 15px;
+            border-radius: 6px;
+            border-left: 4px solid #0b5936;
+            font-size: 14px;
+        }
+        .profile-card p { 
+            margin: 6px 0; color: #334155;
+            font-size: 1rem;
+        }
+        .system-ready-banner {
+            background: #f0fdf4;
+            border: 1px dashed #22c55e;
+            border-radius: 6px;
+            padding: 12px;
+            text-align: center;
+            color: #15803d;
+            font-size: 13px;
+        }

@@ -162,7 +162,9 @@
             <div id="quizContainer"></div>
             <button type="submit" class="btn-submit">Submit Exam</button>
         </form>
+
     </main>
+
 
     <script>
         const questions = [
@@ -347,5 +349,16 @@
 
         document.getElementById('quizForm').addEventListener('submit', handleSubmit);
     </script>
+
+    <script src="/js/monitor/lockdown.js"></script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        // The student is now safely inside the exam canvas. Engage the lockdown!
+        if (typeof LockdownEngine !== 'undefined') {
+            LockdownEngine.init();
+        }
+    });
+</script>
 </body>
 </html>
