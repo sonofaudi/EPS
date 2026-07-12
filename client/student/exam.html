@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -48,16 +47,41 @@
             border-radius: 0.375rem;
         }
 
-        main {
-            max-width: 800px;
-            margin: 2rem auto;
+        /* Responsive Dual-Column Split Grid System */
+        .exam-layout { 
+            display: grid; 
+            grid-template-columns: 2fr 1fr; 
+            gap: 24px; 
+            max-width: 1400px; 
+            margin: 2rem auto; 
             padding: 0 1rem;
+            box-sizing: border-box;
+        }
+
+        @media (max-width: 1024px) {
+            .exam-layout { grid-template-columns: 1fr; }
+            .proctor-panel { position: static; }
+        }
+
+        .assessment-area, .proctor-panel { 
+            background: var(--card-bg); 
+            padding: 1.5rem; 
+            border: 1px solid var(--border); 
+            border-radius: 0.5rem; 
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            box-sizing: border-box;
+        }
+
+        .proctor-panel {
+            align-self: start;
+            position: sticky;
+            top: 6.5rem; 
         }
 
         .section-title {
             border-bottom: 2px solid var(--primary);
             padding-bottom: 0.5rem;
-            margin-top: 3rem;
+            margin-top: 2rem;
             color: var(--primary);
         }
 
@@ -144,6 +168,63 @@
             border-color: var(--error) !important;
             color: #7f1d1d;
         }
+
+        /* Video / Canvas Layer Configurations */
+        .camera-box { 
+            position: relative;
+            width: 100%; 
+            max-width: 320px; 
+            aspect-ratio: 4/3; 
+            background: #111827; 
+            border-radius: 8px; 
+            overflow: hidden; 
+            margin: 1.5rem auto; 
+            border: 3px solid var(--border); 
+        }
+
+        #proctorFeed { 
+            width: 100%; 
+            height: 100%; 
+            object-fit: cover; 
+            transform: scaleX(-1); /* Mirror Alignment Viewport */
+        }
+
+        #proctorCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            transform: scaleX(-1); /* Sync Mirror Alignment With Video */
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .status-badge { 
+            display: block; 
+            width: 100%; 
+            padding: 10px; 
+            font-weight: bold; 
+            font-size: 13px; 
+            text-align: center; 
+            border-radius: 6px; 
+            background: #fee2e2; 
+            color: #991b1b; 
+            border: 1px solid rgba(153, 27, 27, 0.1);
+            transition: all 0.3s ease; 
+            box-sizing: border-box;
+        }
+
+        .security-note {
+            font-size: 13px; 
+            line-height: 1.5;
+            padding: 15px; 
+            background: #fffdf5; 
+            border: 1px dashed #eab308;
+            color: #713f12;
+            border-radius: 6px;
+            margin-top: 15px;
+        }
     </style>
 </head>
 <body>
@@ -156,16 +237,42 @@
         <div class="timer" id="timerDisplay">Time Left: 60:00</div>
     </header>
 
-    <main>
-        <div id="results"></div>
-        <form id="quizForm">
-            <div id="quizContainer"></div>
-            <button type="submit" class="btn-submit">Submit Exam</button>
-        </form>
+    <div class="exam-layout">
+        
+        <main class="assessment-area" style="margin: 0; padding: 0; border: none; box-shadow: none;">
+            <div id="results"></div>
+            <form id="quizForm">
+                <div id="quizContainer"></div>
+                <button type="submit" class="btn-submit">Submit Exam</button>
+            </form>
+        </main>
 
-    </main>
+        <aside class="proctor-panel">
+            <h3 style="margin-top:0; color: #1e293b; border-bottom: 1px solid var(--border); padding-bottom: 10px;">Live Security Integrity</h3>
+            
+            <div id="proctorStatus" class="status-badge">⏳ Initializing Security Hardware...</div>
+            
+            <div class="camera-box">
+                <video id="proctorFeed" autoplay playsinline muted></video>
+                <canvas id="proctorCanvas"></canvas>
+            </div>
 
+            <div class="security-note">
+                <strong>Security Grid Enforcement:</strong><br>
+                This session is actively being monitored for integrity metrics. Background snapshots, network diagnostics, and keyboard interaction vectors are continuously archived. Exiting full-screen or switching tabs constitutes a security integrity violation.
+            </div>
+        </aside>
 
+    </div>
+
+    <!-- AI Core Engine Implementations -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
+    <script src="/js/lib/face-api.min.js"></script>
+    <script src="/js/monitor/lockdown.js" defer></script>
+    <script type="module" src="/js/student/exam.js"></script>
+    
+    <!-- Local Component Render Logic -->
     <script>
         const questions = [
             // HTML Section (1-20)
@@ -186,7 +293,7 @@
             { id: 15, section: "HTML", q: "What is the correct HTML for making a checkbox?", o: ["<check>", "<input type=\"checkbox\">", "<checkbox>", "<input type=\"check\">"], a: 1 },
             { id: 16, section: "HTML", q: "What is the correct HTML for making a text input area?", o: ["<input type=\"textbox\">", "<input type=\"text\">", "<textinput>", "<textarea>"], a: 1 },
             { id: 17, section: "HTML", q: "What is the correct HTML for inserting an image?", o: ["<image src=\"image.gif\" alt=\"MyImage\">", "<img href=\"image.gif\" alt=\"MyImage\">", "<img src=\"image.gif\" alt=\"MyImage\">", "<img alt=\"MyImage\">image.gif</img>"], a: 2 },
-            { id: 18, section: "HTML", q: "What is the correct HTML for inserting a comment?", o: ["", "' Comment", "// Comment", "<comment>Comment</comment>"], a: 0 },
+            { id: 18, section: "HTML", q: "What is the correct HTML for inserting a comment?", o: ["<!-- Comment -->", "' Comment", "// Comment", "<comment>Comment</comment>"], a: 0 },
             { id: 19, section: "HTML", q: "Which HTML element defines the title of a document?", o: ["<meta>", "<head>", "<title>", "<header>"], a: 2 },
             { id: 20, section: "HTML", q: "Which HTML attribute specifies an alternate text for an image, if the image cannot be displayed?", o: ["title", "src", "longdesc", "alt"], a: 3 },
 
@@ -222,7 +329,7 @@
             { id: 47, section: "JavaScript", q: "How to write an IF statement for executing some code if 'i' is NOT equal to 5?", o: ["if (i <> 5)", "if i <> 5", "if (i != 5)", "if i =! 5 then"], a: 2 },
             { id: 48, section: "JavaScript", q: "How does a WHILE loop start?", o: ["while i = 1 to 10", "while (i <= 10)", "while i <= 10 into", "loop while (i <= 10)"], a: 1 },
             { id: 49, section: "JavaScript", q: "How does a FOR loop start?", o: ["for (i = 0; i <= 5; i++)", "for (i <= 5; i++)", "for i = 1 to 5", "for (i = 0; i <= 5)"], a: 0 },
-            { id: 50, section: "JavaScript", q: "How can you add a comment in a JavaScript?", o: ["' This is a comment", "", "// This is a comment", "* This is a comment"], a: 2 },
+            { id: 50, section: "JavaScript", q: "How can you add a comment in a JavaScript?", o: ["' This is a comment", "<!-- This is a comment -->", "// This is a comment", "* This is a comment"], a: 2 },
             { id: 51, section: "JavaScript", q: "What is the correct way to write a JavaScript array?", o: ["var colors = 1 = ('red'), 2 = ('green'), 3 = ('blue')", "var colors = (1:'red', 2:'green', 3:'blue')", "var colors = ['red', 'green', 'blue']", "var colors = 'red', 'green', 'blue'"], a: 2 },
             { id: 52, section: "JavaScript", q: "How do you round the number 7.25, to the nearest integer?", o: ["round(7.25)", "Math.rnd(7.25)", "Math.round(7.25)", "rnd(7.25)"], a: 2 },
             { id: 53, section: "JavaScript", q: "How do you find the number with the highest value of x and y?", o: ["Math.max(x, y)", "ceil(x, y)", "Math.ceil(x, y)", "top(x, y)"], a: 0 },
@@ -258,8 +365,6 @@
 
             const qText = document.createElement('div');
             qText.className = 'question-text';
-            
-            // Using textContent safely prints raw HTML snippet tokens without confusing the rendering DOM
             qText.textContent = `${index + 1}. ${item.q}`;
             card.appendChild(qText);
 
@@ -292,7 +397,7 @@
             container.appendChild(card);
         });
 
-        // 60-Minute Countdown Timer
+        // Countdown Timer Logic
         let timeLeft = 60 * 60; 
         const timerDisplay = document.getElementById('timerDisplay');
         const timerInterval = setInterval(() => {
@@ -350,15 +455,131 @@
         document.getElementById('quizForm').addEventListener('submit', handleSubmit);
     </script>
 
-    <script src="/js/monitor/lockdown.js"></script>
+    <!-- Active AI Stream, Bounding Matrix & Tab Lockdown Visual Orchestrator -->
+    <script>
+        document.addEventListener("DOMContentLoaded", async () => {
+            const video = document.getElementById('proctorFeed');
+            const canvas = document.getElementById('proctorCanvas');
+            const statusBadge = document.getElementById('proctorStatus');
+            const ctx = canvas.getContext('2d');
 
-<script>
-    document.addEventListener("DOMContentLoaded", () => {
-        // The student is now safely inside the exam canvas. Engage the lockdown!
-        if (typeof LockdownEngine !== 'undefined') {
-            LockdownEngine.init();
-        }
-    });
-</script>
+            // Global Security Tab Strike Vectors
+            let visibilityStrikes = 0;
+            const maxStrikes = 3;
+
+            // Absolute Event Hook for Page/Tab Visibility Changes
+            document.addEventListener("visibilitychange", () => {
+                if (document.hidden) {
+                    visibilityStrikes++;
+                    
+                    // Update the live proctor panel state dynamically
+                    statusBadge.innerText = `🚨 SECURITY VIOLATION: Tab Switch Detected! (Strike ${visibilityStrikes}/${maxStrikes})`;
+                    statusBadge.style.background = "#fee2e2";
+                    statusBadge.style.color = "#dc2626";
+                    statusBadge.style.borderColor = "#f87171";
+
+                    // Display an immediate modal browser warning alert
+                    alert(`SECURITY WARNING:\nYou have navigated away from the exam terminal. Tab switching is strictly prohibited.\nStrike count: ${visibilityStrikes} / ${maxStrikes}.\nReaching maximum strikes will result in automatic submission.`);
+
+                    // Enforce automatic submission if threshold is crossed
+                    if (visibilityStrikes >= maxStrikes) {
+                        alert("Maximum security integrity violations reached. Submitting exam immediately.");
+                        handleSubmit(new Event('submit'));
+                    }
+                }
+            });
+
+            try {
+                // Initialize user interface media interface context
+                const stream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { width: 640, height: 480 }, 
+                    audio: false 
+                });
+                video.srcObject = stream;
+
+                video.onloadedmetadata = () => {
+                    // Match visual context canvas pixels directly with standard hardware source feeds
+                    canvas.width = video.videoWidth;
+                    canvas.height = video.videoHeight;
+                    
+                    statusBadge.innerText = "⏳ Loading AI Vision Models...";
+                    statusBadge.style.background = "#fef3c7";
+                    statusBadge.style.color = "#92400e";
+                    
+                    initAIVectorEngines();
+                };
+            } catch (err) {
+                statusBadge.innerText = "❌ Security Integrity Violation: Camera Blocked";
+                statusBadge.style.background = "#fee2e2";
+                statusBadge.style.color = "#dc2626";
+            }
+
+            async function initAIVectorEngines() {
+                try {
+                    // Load Object Detection Engine Matrix
+                    const objectModel = await cocoSsd.load();
+                    
+                    // Conditionally attempt to load Face API metrics
+                    if (typeof faceapi !== 'undefined') {
+                        await faceapi.nets.tinyFaceDetector.loadFromUri('/models');
+                    }
+
+                    statusBadge.innerText = "🛡️ AI Core Guard Active";
+                    statusBadge.style.background = "#dcfce7";
+                    statusBadge.style.color = "#14532d";
+
+                    // Start continuous loop at ~15 Frames Per Second
+                    setInterval(async () => {
+                        if (video.readyState === video.HAVE_ENOUGH_DATA) {
+                            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                            // Execute calculations
+                            const predictions = await objectModel.detect(video);
+                            let flagCount = 0;
+                            
+                            predictions.forEach(prediction => {
+                                // Render individual tracking boxes overlay paths
+                                ctx.strokeStyle = "#2563eb";
+                                ctx.lineWidth = 4;
+                                ctx.strokeRect(...prediction.bbox);
+
+                                // Append metadata descriptors over active components
+                                ctx.fillStyle = "#2563eb";
+                                ctx.font = "bold 16px sans-serif";
+                                ctx.fillText(
+                                    `${prediction.class} (${Math.round(prediction.score * 100)}%)`, 
+                                    prediction.bbox[0], 
+                                    prediction.bbox[1] > 20 ? prediction.bbox[1] - 8 : 15
+                                );
+
+                                // Validate standard object parameters against tracking restrictions
+                                if (["cell phone", "book", "laptop"].includes(prediction.class)) {
+                                    flagCount++;
+                                }
+                            });
+
+                            // Only alter state if a tab switch alert isn't overriding the warning space
+                            if (!statusBadge.innerText.includes("🚨")) {
+                                if (flagCount > 0) {
+                                    statusBadge.innerText = "⚠️ Flagged: Unauthorized Material Detected";
+                                    statusBadge.style.background = "#fee2e2";
+                                    statusBadge.style.color = "#dc2626";
+                                    statusBadge.style.borderColor = "#f87171";
+                                } else {
+                                    statusBadge.innerText = "🛡️ AI Core Guard Active";
+                                    statusBadge.style.background = "#dcfce7";
+                                    statusBadge.style.color = "#14532d";
+                                    statusBadge.style.borderColor = "transparent";
+                                }
+                            }
+                        }
+                    }, 66);
+                } catch (e) {
+                    console.error("AI Context Init Failure: ", e);
+                    statusBadge.innerText = "⚠️ Security Integrity Warning: Fallback Enabled";
+                }
+            }
+        });
+    </script>
 </body>
 </html>

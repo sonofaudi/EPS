@@ -1,0 +1,122 @@
+Folder PATH listing
+Volume serial number is 000000C8 B0E9:4301
+C:.
+¦   architecture.txt
+¦   README.md
+¦   
++---.vscode
+¦       settings.json
+¦       
++---client
+¦   +---admin
+¦   ¦       dashboard.html
+¦   ¦       login.html
+¦   ¦       reports.html
+¦   ¦       sessions.html
+¦   ¦       students.html
+¦   ¦       
+¦   +---assets
+¦   ¦       logo.png
+¦   ¦       vecteezy_abstract-gradient-background-purple-green-design-template_24080014.jpg
+¦   ¦       vecteezy_background-illustration-of-green-purple-and-yellow-gradient_24873678.jpg
+¦   ¦       
+¦   +---css
+¦   ¦       dashboard.css
+¦   ¦       exam.css
+¦   ¦       global.css
+¦   ¦       login.css
+¦   ¦       reports.css
+¦   ¦       session.css
+¦   ¦       
+¦   +---js
+¦   ¦   +---admin
+¦   ¦   ¦       dashboard.js
+¦   ¦   ¦       reports.js
+¦   ¦   ¦       sessions.js
+¦   ¦   ¦       
+¦   ¦   +---auth
+¦   ¦   ¦       admin-login.js
+¦   ¦   ¦       login.js
+¦   ¦   ¦       logout.js
+¦   ¦   ¦       system-check.js
+¦   ¦   ¦       verify.js
+¦   ¦   ¦       
+¦   ¦   +---monitor
+¦   ¦   ¦       faceMonitor.js
+¦   ¦   ¦       fullscreen.js
+¦   ¦   ¦       gazeTracker.js
+¦   ¦   ¦       keyboard.js
+¦   ¦   ¦       lockdown.js
+¦   ¦   ¦       objectDetector.js
+¦   ¦   ¦       proctor-capture.js
+¦   ¦   ¦       proctor-feed.js
+¦   ¦   ¦       tabDetect.js
+¦   ¦   ¦       violationsEngine.js
+¦   ¦   ¦       
+¦   ¦   +---student
+¦   ¦           exam.js
+¦   ¦           session.js
+¦   ¦           submitted.js
+¦   ¦           
+¦   +---models
+¦   +---student
+¦           exam.html
+¦           login.html
+¦           session.html
+¦           submitted.html
+¦           verify.html
+¦           waiting.html
+¦           
++---public
+¦   +---faces
+¦   +---models
+¦   +---screenshots
+¦   +---uploads
++---server
+    ¦   app.js
+    ¦   seed.js
+    ¦   server.js
+    ¦   
+    +---config
+    ¦       cloudinary.js
+    ¦       database.js
+    ¦       
+    +---controllers
+    ¦       adminController.js
+    ¦       authController.js
+    ¦       examController.js
+    ¦       reportController.js
+    ¦       sessionController.js
+    ¦       
+    +---middleware
+    ¦       adminAuth.js
+    ¦       auth.js
+    ¦       logger.js
+    ¦       upload.js
+    ¦       
+    +---models
+    ¦       Admin.js
+    ¦       Candidate.js
+    ¦       Exam.js
+    ¦       Session.js
+    ¦       Violation.js
+    ¦       
+    +---routes
+    ¦       admin.js
+    ¦       auth.js
+    ¦       exams.js
+    ¦       reports.js
+    ¦       sessions.js
+    ¦       
+    +---services
+    ¦       faceService.js
+    ¦       monitorService.js
+    ¦       screenshotService.js
+    ¦       violationService.js
+    ¦       
+    +---storage
+    ¦   +---frames
+    +---utils
+            constants.js
+            helpers.js
+            

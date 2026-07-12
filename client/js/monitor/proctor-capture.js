@@ -1,35 +1,45 @@
 /**
- * KASU EPS — Phase 4: Continuous Proctoring Monitoring Hub
+ * KASU Proctoring System - Client Canvas Frame Grabber Utility
+ * File Path: client/js/monitor/proctor-capture.js
  */
 
-const secureInitializationZone = document.getElementById('secure-initialization-zone');
-const enterExamBtn = document.getElementById('enterExamBtn');
+const ProctorCapture = {
+    /**
+     * Extracts a frame snapshot from the running webcam layout element
+     * @param {string} videoElementId - Domestic ID selector of the active HTML video tag
+     * @returns {string|null} - Base64 JPEG string snapshot sequence, or null if camera unavailable
+     */
+    grabSnapshot(videoElementId = 'proctorFeed') {
+        const video = document.getElementById(videoElementId);
+        
+        if (!video || video.readyState !== video.HAVE_ENOUGH_DATA) {
+            console.warn("⚠️ Snapshot intercept failed: Video feed source stream not ready.");
+            return null;
+        }
 
-function initializeEnvironmentScanStage() {
-    console.log("🚀 Diagnostics passed. Secure Exam Initialization unblocked.");
-    if (secureInitializationZone) secureInitializationZone.classList.remove('disabled');
-    if (enterExamBtn) enterExamBtn.disabled = false;
-}
+        try {
+            // Create an off-screen transient canvas block
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = video.videoWidth || 640;
+            tempCanvas.height = video.videoHeight || 480;
+            
+            const context = tempCanvas.getContext('2d');
+            
+            // Mirror flip alignment support to stay consistent with the user layout canvas
+            context.translate(tempCanvas.width, 0);
+            context.scale(-1, 1);
+            
+            // Render the instantaneous frame capture onto the layout context box
+            context.drawImage(video, 0, 0, tempCanvas.width, tempCanvas.height);
+            
+            // Extract the canvas down into a low-overhead compressed Base64 JPEG layout string
+            return tempCanvas.toDataURL('image/jpeg', 0.6); // 60% quality compression balance
 
-/**
- * Handle Authorization Validation Transitions Safely
- */
-function handleExamSandboxActivation() {
-    if (enterExamBtn) {
-        enterExamBtn.disabled = true;
-        enterExamBtn.innerText = "🔒 Arming Security Grid...";
+        } catch (error) {
+            console.error("❌ Frontend video frame state extraction pipeline failure:", error);
+            return null;
+        }
     }
+};
 
-    // Extract current token from URL string
-    const urlParams = new URLSearchParams(window.location.search);
-    const activeToken = urlParams.get('session') || `EPS-${Date.now()}`;
-
-    // Clean handoff: Redirect WITHOUT initializing restrictions on this page
-    window.location.href = `exam.html?session=${activeToken}`;
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-    if (enterExamBtn) {
-        enterExamBtn.addEventListener('click', handleExamSandboxActivation);
-    }
-});
+window.ProctorCapture = ProctorCapture;
