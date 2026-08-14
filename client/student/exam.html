@@ -4,228 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Web Development Demo Exam (HTML/CSS/JS)</title>
-    <style>
-        :root {
-            --primary: #2563eb;
-            --primary-hover: #1d4ed8;
-            --success: #16a34a;
-            --error: #dc2626;
-            --bg: #f8fafc;
-            --card-bg: #ffffff;
-            --text: #0f172a;
-            --border: #e2e8f0;
-        }
-
-        body {
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background-color: var(--bg);
-            color: var(--text);
-            line-height: 1.5;
-            margin: 0;
-            padding: 0;
-        }
-
-        header {
-            background-color: var(--card-bg);
-            border-bottom: 1px solid var(--border);
-            padding: 1rem 2rem;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-        }
-
-        .timer {
-            font-size: 1.25rem;
-            font-weight: bold;
-            color: var(--error);
-            background: #fee2e2;
-            padding: 0.5rem 1rem;
-            border-radius: 0.375rem;
-        }
-
-        /* Responsive Dual-Column Split Grid System */
-        .exam-layout { 
-            display: grid; 
-            grid-template-columns: 2fr 1fr; 
-            gap: 24px; 
-            max-width: 1400px; 
-            margin: 2rem auto; 
-            padding: 0 1rem;
-            box-sizing: border-box;
-        }
-
-        @media (max-width: 1024px) {
-            .exam-layout { grid-template-columns: 1fr; }
-            .proctor-panel { position: static; }
-        }
-
-        .assessment-area, .proctor-panel { 
-            background: var(--card-bg); 
-            padding: 1.5rem; 
-            border: 1px solid var(--border); 
-            border-radius: 0.5rem; 
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-            box-sizing: border-box;
-        }
-
-        .proctor-panel {
-            align-self: start;
-            position: sticky;
-            top: 6.5rem; 
-        }
-
-        .section-title {
-            border-bottom: 2px solid var(--primary);
-            padding-bottom: 0.5rem;
-            margin-top: 2rem;
-            color: var(--primary);
-        }
-
-        .question-card {
-            background: var(--card-bg);
-            border: 1px solid var(--border);
-            border-radius: 0.5rem;
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-        }
-
-        .question-text {
-            font-weight: 600;
-            margin-bottom: 1rem;
-        }
-
-        .options-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-
-        .option-item {
-            margin-bottom: 0.5rem;
-            display: flex;
-            align-items: center;
-            padding: 0.75rem;
-            border: 1px solid var(--border);
-            border-radius: 0.375rem;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-
-        .option-item:hover {
-            background-color: #f1f5f9;
-        }
-
-        .option-item input {
-            margin-right: 1rem;
-            transform: scale(1.2);
-        }
-
-        .btn-submit {
-            display: block;
-            width: 100%;
-            background-color: var(--primary);
-            color: white;
-            border: none;
-            padding: 1rem;
-            font-size: 1.1rem;
-            font-weight: bold;
-            border-radius: 0.5rem;
-            cursor: pointer;
-            margin-top: 2rem;
-            transition: background 0.2s;
-        }
-
-        .btn-submit:hover {
-            background-color: var(--primary-hover);
-        }
-
-        #results {
-            display: none;
-            background: #dcfce7;
-            border: 2px solid var(--success);
-            color: #14532d;
-            padding: 1.5rem;
-            border-radius: 0.5rem;
-            margin-bottom: 2rem;
-            text-align: center;
-            font-size: 1.5rem;
-            font-weight: bold;
-        }
-
-        .correct {
-            background-color: #dcfce7 !important;
-            border-color: var(--success) !important;
-            color: #14532d;
-        }
-
-        .incorrect {
-            background-color: #fee2e2 !important;
-            border-color: var(--error) !important;
-            color: #7f1d1d;
-        }
-
-        /* Video / Canvas Layer Configurations */
-        .camera-box { 
-            position: relative;
-            width: 100%; 
-            max-width: 320px; 
-            aspect-ratio: 4/3; 
-            background: #111827; 
-            border-radius: 8px; 
-            overflow: hidden; 
-            margin: 1.5rem auto; 
-            border: 3px solid var(--border); 
-        }
-
-        #proctorFeed { 
-            width: 100%; 
-            height: 100%; 
-            object-fit: cover; 
-            transform: scaleX(-1); /* Mirror Alignment Viewport */
-        }
-
-        #proctorCanvas {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            transform: scaleX(-1); /* Sync Mirror Alignment With Video */
-            pointer-events: none;
-            z-index: 10;
-        }
-
-        .status-badge { 
-            display: block; 
-            width: 100%; 
-            padding: 10px; 
-            font-weight: bold; 
-            font-size: 13px; 
-            text-align: center; 
-            border-radius: 6px; 
-            background: #fee2e2; 
-            color: #991b1b; 
-            border: 1px solid rgba(153, 27, 27, 0.1);
-            transition: all 0.3s ease; 
-            box-sizing: border-box;
-        }
-
-        .security-note {
-            font-size: 13px; 
-            line-height: 1.5;
-            padding: 15px; 
-            background: #fffdf5; 
-            border: 1px dashed #eab308;
-            color: #713f12;
-            border-radius: 6px;
-            margin-top: 15px;
-        }
-    </style>
+    <link rel="stylesheet" href="/css/exam.css">
 </head>
 <body>
 
@@ -257,329 +36,388 @@
                 <canvas id="proctorCanvas"></canvas>
             </div>
 
+                <div class="strike-box" id="strikeCounterBox">
+                   <span class="strike-title">Security Violations / Strikes</span>
+                   <div class="strike-count" id="strikeCountDisplay">0 / 3</div>
+                </div>
+
             <div class="security-note">
                 <strong>Security Grid Enforcement:</strong><br>
                 This session is actively being monitored for integrity metrics. Background snapshots, network diagnostics, and keyboard interaction vectors are continuously archived. Exiting full-screen or switching tabs constitutes a security integrity violation.
             </div>
         </aside>
-
+       
     </div>
 
-    <!-- AI Core Engine Implementations -->
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
-    <script src="/js/lib/face-api.min.js"></script>
-    <script src="/js/monitor/lockdown.js" defer></script>
-    <script type="module" src="/js/student/exam.js"></script>
-    
-    <!-- Local Component Render Logic -->
-    <script>
-        const questions = [
-            // HTML Section (1-20)
-            { id: 1, section: "HTML", q: "What does HTML stand for?", o: ["Hyper Text Markup Language", "Home Tool Markup Language", "Hyperlinks and Text Markup Language", "High Tech Markup Language"], a: 0 },
-            { id: 2, section: "HTML", q: "Who is making the Web standards?", o: ["Mozilla", "Microsoft", "The World Wide Web Consortium (W3C)", "Google"], a: 2 },
-            { id: 3, section: "HTML", q: "Choose the correct HTML element for the largest heading:", o: ["<heading>", "<h6>", "<h1>", "<head>"], a: 2 },
-            { id: 4, section: "HTML", q: "What is the correct HTML element for inserting a line break?", o: ["<break>", "<lb>", "<br>", "<next>"], a: 2 },
-            { id: 5, section: "HTML", q: "What is the correct HTML for adding a background color?", o: ["<body bg=\"yellow\">", "<body style=\"background-color:yellow;\">", "<background>yellow</background>", "<body color=\"yellow\">"], a: 1 },
-            { id: 6, section: "HTML", q: "Choose the correct HTML element to define important text:", o: ["<strong>", "<i>", "<important>", "<bdo>"], a: 0 },
-            { id: 7, section: "HTML", q: "Choose the correct HTML element to define emphasized text:", o: ["<italic>", "<em>", "<i>", "<emp>"], a: 1 },
-            { id: 8, section: "HTML", q: "What is the correct HTML for creating a hyperlink?", o: ["<a href=\"http://www.w3schools.com\">W3Schools</a>", "<a name=\"\">W3Schools.com</a>", "<a>http://www.w3schools.com</a>", "<a url=\"\">W3Schools.com</a>"], a: 0 },
-            { id: 9, section: "HTML", q: "Which character is used to indicate an end tag?", o: ["*", "<", "^", "/"], a: 3 },
-            { id: 10, section: "HTML", q: "How can you open a link in a new tab/browser window?", o: ["<a href=\"url\" target=\"new\">", "<a href=\"url\" target=\"_blank\">", "<a href=\"url\" new>", "<a href=\"url\" target=\"_parent\">"], a: 1 },
-            { id: 11, section: "HTML", q: "Which of these elements are all <table> elements?", o: ["<table><head><tfoot>", "<table><tr><td>", "<table><tr><tt>", "<thead><body><tr>"], a: 1 },
-            { id: 12, section: "HTML", q: "Inline elements are normally displayed without starting a new line.", o: ["True", "False"], a: 0 },
-            { id: 13, section: "HTML", q: "How can you make a numbered list?", o: ["<ul>", "<ol>", "<list>", "<dl>"], a: 1 },
-            { id: 14, section: "HTML", q: "How can you make a bulleted list?", o: ["<ol>", "<list>", "<ul>", "<dl>"], a: 2 },
-            { id: 15, section: "HTML", q: "What is the correct HTML for making a checkbox?", o: ["<check>", "<input type=\"checkbox\">", "<checkbox>", "<input type=\"check\">"], a: 1 },
-            { id: 16, section: "HTML", q: "What is the correct HTML for making a text input area?", o: ["<input type=\"textbox\">", "<input type=\"text\">", "<textinput>", "<textarea>"], a: 1 },
-            { id: 17, section: "HTML", q: "What is the correct HTML for inserting an image?", o: ["<image src=\"image.gif\" alt=\"MyImage\">", "<img href=\"image.gif\" alt=\"MyImage\">", "<img src=\"image.gif\" alt=\"MyImage\">", "<img alt=\"MyImage\">image.gif</img>"], a: 2 },
-            { id: 18, section: "HTML", q: "What is the correct HTML for inserting a comment?", o: ["<!-- Comment -->", "' Comment", "// Comment", "<comment>Comment</comment>"], a: 0 },
-            { id: 19, section: "HTML", q: "Which HTML element defines the title of a document?", o: ["<meta>", "<head>", "<title>", "<header>"], a: 2 },
-            { id: 20, section: "HTML", q: "Which HTML attribute specifies an alternate text for an image, if the image cannot be displayed?", o: ["title", "src", "longdesc", "alt"], a: 3 },
+<!-- TensorFlow Core and COCO-SSD Model CDN Dependencies -->
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
 
-            // CSS Section (21-40)
-            { id: 21, section: "CSS", q: "What does CSS stand for?", o: ["Creative Style Sheets", "Cascading Style Sheets", "Computer Style Sheets", "Colorful Style Sheets"], a: 1 },
-            { id: 22, section: "CSS", q: "What is the correct HTML shortcut for referring to an external style sheet?", o: ["<style src=\"mystyle.css\">", "<link rel=\"stylesheet\" type=\"text/css\" href=\"mystyle.css\">", "<stylesheet>mystyle.css</stylesheet>", "<link href=\"mystyle.css\">"], a: 1 },
-            { id: 23, section: "CSS", q: "Where in an HTML document is the correct place to refer to an external style sheet?", o: ["In the <body> section", "At the end of the document", "In the <head> section", "Inside the <html> tag"], a: 2 },
-            { id: 24, section: "CSS", q: "Which HTML tag is used to define an internal style sheet?", o: ["<css>", "<script>", "<style>", "<div style=\"\">"], a: 2 },
-            { id: 25, section: "CSS", q: "Which HTML attribute is used to define inline styles?", o: ["class", "styles", "font", "style"], a: 3 },
-            { id: 26, section: "CSS", q: "Which is the correct CSS syntax?", o: ["body {color: black;}", "{body;color:black;}", "body:color=black;", "{body:color=black;}"], a: 0 },
-            { id: 27, section: "CSS", q: "How do you insert a comment in a CSS file?", o: ["// this is a comment", "/* this is a comment */", "' this is a comment", "// this is a comment //"], a: 1 },
-            { id: 28, section: "CSS", q: "Which property is used to change the background color?", o: ["color", "bgcolor", "background-color", "background:color"], a: 2 },
-            { id: 29, section: "CSS", q: "How do you add a background color for all <h1> elements?", o: ["h1.all {background-color:#FFFFFF;}", "h1 {background-color:#FFFFFF;}", "all.h1 {background-color:#FFFFFF;}", "h1 {bg-color:#FFFFFF;}"], a: 1 },
-            { id: 30, section: "CSS", q: "Which CSS property is used to change the text color of an element?", o: ["text-color", "fgcolor", "color", "font-color"], a: 2 },
-            { id: 31, section: "CSS", q: "Which CSS property controls the text size?", o: ["text-style", "font-size", "text-size", "font-style"], a: 1 },
-            { id: 32, section: "CSS", q: "What is the correct CSS syntax for making all the <p> elements bold?", o: ["p {font-weight:bold;}", "p {text-size:bold;}", "<p style=\"font-size:bold;\">", "p {font:bold;}"], a: 0 },
-            { id: 33, section: "CSS", q: "How do you display hyperlinks without an underline?", o: ["a {text-decoration:none;}", "a {text-underline:none;}", "a {underline:none;}", "a {decoration:no-underline;}"], a: 0 },
-            { id: 34, section: "CSS", q: "How do you make each word in a text start with a capital letter?", o: ["text-transform:capitalize", "text-style:capitalize", "You cannot do that with CSS", "text-transform:uppercase"], a: 0 },
-            { id: 35, section: "CSS", q: "Which property is used to change the font of an element?", o: ["font-style", "font-weight", "font-family", "font-type"], a: 2 },
-            { id: 36, section: "CSS", q: "How do you make the text bold?", o: ["font:bold;", "font-weight:bold;", "style:bold;", "font-size:bold;"], a: 1 },
-            { id: 37, section: "CSS", q: "How do you display a border like this: Top border = 10px, Bottom border = 5px, Left border = 20px, Right border = 1px?", o: ["border-width:10px 1px 5px 20px;", "border-width:10px 20px 5px 1px;", "border-width:10px 5px 20px 1px;", "border-width:5px 20px 10px 1px;"], a: 0 },
-            { id: 38, section: "CSS", q: "Which property is used to change the left margin of an element?", o: ["padding-left", "margin-left", "indent", "margin-padding-left"], a: 1 },
-            { id: 39, section: "CSS", q: "When using the padding property; are you allowed to use negative values?", o: ["Yes", "No"], a: 1 },
-            { id: 40, section: "CSS", q: "How do you select an element with id 'demo'?", o: [".demo", "#demo", "*demo", "demo"], a: 1 },
+<!-- Core Pipeline Execution -->
+<script src="/js/monitor/aiViolationMapper.js"></script>
+<script src="/js/monitor/violationsEngine.js"></script>
+<script src="/js/monitor/proctorCapture.js"></script>
+<script src="/js/monitor/browserSecurity.js"></script>
+<script src="/js/monitor/faceMonitor.js"></script>
 
-            // JavaScript Section (41-65)
-            { id: 41, section: "JavaScript", q: "Inside which HTML element do we put the JavaScript?", o: ["<js>", "<scripting>", "<script>", "<javascript>"], a: 2 },
-            { id: 42, section: "JavaScript", q: "What is the correct HTML syntax for referring to an external script called 'xxx.js'?", o: ["<script href=\"xxx.js\">", "<script name=\"xxx.js\">", "<script src=\"xxx.js\">", "<script file=\"xxx.js\">"], a: 2 },
-            { id: 43, section: "JavaScript", q: "How do you write 'Hello World' in an alert box?", o: ["msgBox(\"Hello World\");", "alertBox(\"Hello World\");", "msg(\"Hello World\");", "alert(\"Hello World\");"], a: 3 },
-            { id: 44, section: "JavaScript", q: "How do you create a function in JavaScript?", o: ["function = myFunction()", "function myFunction()", "function:myFunction()", "new function()"], a: 1 },
-            { id: 45, section: "JavaScript", q: "How do you call a function named 'myFunction'?", o: ["call myFunction()", "myFunction()", "call function myFunction()", "execute myFunction()"], a: 1 },
-            { id: 46, section: "JavaScript", q: "How to write an IF statement in JavaScript?", o: ["if i = 5 then", "if i == 5 then", "if (i == 5)", "if i = 5"], a: 2 },
-            { id: 47, section: "JavaScript", q: "How to write an IF statement for executing some code if 'i' is NOT equal to 5?", o: ["if (i <> 5)", "if i <> 5", "if (i != 5)", "if i =! 5 then"], a: 2 },
-            { id: 48, section: "JavaScript", q: "How does a WHILE loop start?", o: ["while i = 1 to 10", "while (i <= 10)", "while i <= 10 into", "loop while (i <= 10)"], a: 1 },
-            { id: 49, section: "JavaScript", q: "How does a FOR loop start?", o: ["for (i = 0; i <= 5; i++)", "for (i <= 5; i++)", "for i = 1 to 5", "for (i = 0; i <= 5)"], a: 0 },
-            { id: 50, section: "JavaScript", q: "How can you add a comment in a JavaScript?", o: ["' This is a comment", "<!-- This is a comment -->", "// This is a comment", "* This is a comment"], a: 2 },
-            { id: 51, section: "JavaScript", q: "What is the correct way to write a JavaScript array?", o: ["var colors = 1 = ('red'), 2 = ('green'), 3 = ('blue')", "var colors = (1:'red', 2:'green', 3:'blue')", "var colors = ['red', 'green', 'blue']", "var colors = 'red', 'green', 'blue'"], a: 2 },
-            { id: 52, section: "JavaScript", q: "How do you round the number 7.25, to the nearest integer?", o: ["round(7.25)", "Math.rnd(7.25)", "Math.round(7.25)", "rnd(7.25)"], a: 2 },
-            { id: 53, section: "JavaScript", q: "How do you find the number with the highest value of x and y?", o: ["Math.max(x, y)", "ceil(x, y)", "Math.ceil(x, y)", "top(x, y)"], a: 0 },
-            { id: 54, section: "JavaScript", q: "What is the correct JavaScript syntax for opening a new window called 'w3s'?", o: ["w3s = window.open('http://www.w3schools.com');", "w3s = window.new('http://www.w3schools.com');", "w3s = window.create('http://www.w3schools.com');", "window.load('http://www.w3schools.com', 'w3s');"], a: 0 },
-            { id: 55, section: "JavaScript", q: "JavaScript is the same as Java.", o: ["True", "False"], a: 1 },
-            { id: 56, section: "JavaScript", q: "How can you detect the client's browser name?", o: ["client.navName", "browser.name", "navigator.appName", "window.browser"], a: 2 },
-            { id: 57, section: "JavaScript", q: "Which event occurs when the user clicks on an HTML element?", o: ["onmouseclick", "onchange", "onmouseover", "onclick"], a: 3 },
-            { id: 58, section: "JavaScript", q: "How do you declare a JavaScript variable?", o: ["variable carName;", "v carName;", "var carName;", "string carName;"], a: 2 },
-            { id: 59, section: "JavaScript", q: "Which operator is used to assign a value to a variable?", o: ["*", "-", "=", "x"], a: 2 },
-            { id: 60, section: "JavaScript", q: "What will the following code return: Boolean(10 > 9)", o: ["true", "false", "NaN", "undefined"], a: 0 },
-            { id: 61, section: "JavaScript", q: "Is JavaScript case-sensitive?", o: ["Yes", "No"], a: 0 },
-            { id: 62, section: "JavaScript", q: "Which built-in method returns the length of the string?", o: ["length()", "size()", "index()", "None of the above (it's a property: .length)"], a: 3 },
-            { id: 63, section: "JavaScript", q: "Which closure syntax is used to define an arrow function?", o: ["() => {}", "function() => {}", "-> {}", "def()"], a: 0 },
-            { id: 64, section: "JavaScript", q: "What is the result of '5' + 5 in JavaScript?", o: ["10", "55", "Error", "NaN"], a: 1 },
-            { id: 65, section: "JavaScript", q: "Which method removes the last element from an array?", o: ["pop()", "push()", "shift()", "unshift()"], a: 0 }
-        ];
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        console.log("🚀 Initializing KASU EPS Orchestration Sequence...");
 
-        const container = document.getElementById('quizContainer');
-
-        let currentSection = "";
-        questions.forEach((item, index) => {
-            if (currentSection !== item.section) {
-                currentSection = item.section;
-                const sectionHeader = document.createElement('h2');
-                sectionHeader.className = 'section-title';
-                sectionHeader.innerText = `${currentSection} Section`;
-                container.appendChild(sectionHeader);
-            }
-
-            const card = document.createElement('div');
-            card.className = 'question-card';
-            card.id = `q-card-${index}`;
-
-            const qText = document.createElement('div');
-            qText.className = 'question-text';
-            qText.textContent = `${index + 1}. ${item.q}`;
-            card.appendChild(qText);
-
-            const optionsUl = document.createElement('ul');
-            optionsUl.className = 'options-list';
-
-            item.o.forEach((option, oIdx) => {
-                const li = document.createElement('li');
-                li.className = 'option-item';
-                li.id = `opt-${index}-${oIdx}`;
-                
-                const radio = document.createElement('input');
-                radio.type = 'radio';
-                radio.name = `question-${index}`;
-                radio.value = oIdx;
-                radio.id = `radio-${index}-${oIdx}`;
-
-                const label = document.createElement('label');
-                label.htmlFor = `radio-${index}-${oIdx}`;
-                label.textContent = option;
-                label.style.cursor = 'pointer';
-                label.style.width = '100%';
-
-                li.appendChild(radio);
-                li.appendChild(label);
-                optionsUl.appendChild(li);
-            });
-
-            card.appendChild(optionsUl);
-            container.appendChild(card);
-        });
-
-        // Countdown Timer Logic
-        let timeLeft = 60 * 60; 
-        const timerDisplay = document.getElementById('timerDisplay');
-        const timerInterval = setInterval(() => {
-            if (timeLeft <= 0) {
-                clearInterval(timerInterval);
-                timerDisplay.innerText = "Time's up!";
-                handleSubmit(new Event('submit'));
-            } else {
-                timeLeft--;
-                let minutes = Math.floor(timeLeft / 60);
-                let seconds = timeLeft % 60;
-                timerDisplay.innerText = `Time Left: ${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-            }
-        }, 1000);
-
-        function handleSubmit(e) {
-            e.preventDefault();
-            clearInterval(timerInterval);
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-
-            let score = 0;
-            const form = document.getElementById('quizForm');
-            const formData = new FormData(form);
-
-            questions.forEach((item, index) => {
-                const selectedAnswer = formData.get(`question-${index}`);
-                const correctAnswerIdx = item.a;
-
-                document.getElementById(`opt-${index}-${correctAnswerIdx}`).classList.add('correct');
-
-                if (selectedAnswer !== null) {
-                    const selectedIdx = parseInt(selectedAnswer);
-                    if (selectedIdx === correctAnswerIdx) {
-                        score++;
-                    } else {
-                        document.getElementById(`opt-${index}-${selectedIdx}`).classList.add('incorrect');
-                    }
-                }
-                
-                item.o.forEach((_, oIdx) => {
-                    document.getElementById(`radio-${index}-${oIdx}`).disabled = true;
-                });
-            });
-
-            const resultsDiv = document.getElementById('results');
-            const percentage = ((score / questions.length) * 100).toFixed(1);
-            resultsDiv.innerHTML = `Exam Completed!<br>Your Score: ${score} / ${questions.length} (${percentage}%)`;
-            resultsDiv.style.display = 'block';
-            
-            document.querySelector('.btn-submit').disabled = true;
-            document.querySelector('.btn-submit').style.opacity = '0.5';
-            document.querySelector('.btn-submit').innerText = "Exam Evaluated";
+        // 1. Single entry point for Browser Security
+        if (window.BrowserSecurity) {
+            window.BrowserSecurity.init();
+        } else {
+            console.error("❌ BrowserSecurity module failed to load.");
         }
 
-        document.getElementById('quizForm').addEventListener('submit', handleSubmit);
-    </script>
+        // 2. Launch Specialized Face Monitoring if active
+        if (window.FaceMonitor && typeof window.FaceMonitor.start === 'function') {
+            window.FaceMonitor.start();
+        }
+    });
+</script>
 
-    <!-- Active AI Stream, Bounding Matrix & Tab Lockdown Visual Orchestrator -->
-    <script>
-        document.addEventListener("DOMContentLoaded", async () => {
-            const video = document.getElementById('proctorFeed');
-            const canvas = document.getElementById('proctorCanvas');
-            const statusBadge = document.getElementById('proctorStatus');
-            const ctx = canvas.getContext('2d');
+<script>
+    // ==========================================
+    // 1. EXAM QUESTION DATABASE & GENERATOR
+    // ==========================================
+    const questions = [
+        // HTML Section (1-20)
+        { id: 1, section: "HTML", q: "What does HTML stand for?", o: ["Hyper Text Markup Language", "Home Tool Markup Language", "Hyperlinks and Text Markup Language", "High Tech Markup Language"], a: 0 },
+        { id: 2, section: "HTML", q: "Who is making the Web standards?", o: ["Mozilla", "Microsoft", "The World Wide Web Consortium (W3C)", "Google"], a: 2 },
+        { id: 3, section: "HTML", q: "Choose the correct HTML element for the largest heading:", o: ["<heading>", "<h6>", "<h1>", "<head>"], a: 2 },
+        { id: 4, section: "HTML", q: "What is the correct HTML element for inserting a line break?", o: ["<break>", "<lb>", "<br>", "<next>"], a: 2 },
+        { id: 5, section: "HTML", q: "What is the correct HTML for adding a background color?", o: ["<body bg=\"yellow\">", "<body style=\"background-color:yellow;\">", "<background>yellow</background>", "<body color=\"yellow\">"], a: 1 },
+        { id: 6, section: "HTML", q: "Choose the correct HTML element to define important text:", o: ["<strong>", "<i>", "<important>", "<bdo>"], a: 0 },
+        { id: 7, section: "HTML", q: "Choose the correct HTML element to define emphasized text:", o: ["<italic>", "<em>", "<i>", "<emp>"], a: 1 },
+        { id: 8, section: "HTML", q: "What is the correct HTML for creating a hyperlink?", o: ["<a href=\"http://www.w3schools.com\">W3Schools</a>", "<a name=\"\">W3Schools.com</a>", "<a>http://www.w3schools.com</a>", "<a url=\"\">W3Schools.com</a>"], a: 0 },
+        { id: 9, section: "HTML", q: "Which character is used to indicate an end tag?", o: ["*", "<", "^", "/"], a: 3 },
+        { id: 10, section: "HTML", q: "How can you open a link in a new tab/browser window?", o: ["<a href=\"url\" target=\"new\">", "<a href=\"url\" target=\"_blank\">", "<a href=\"url\" new>", "<a href=\"url\" target=\"_parent\">"], a: 1 },
+        { id: 11, section: "HTML", q: "Which of these elements are all <table> elements?", o: ["<table><head><tfoot>", "<table><tr><td>", "<table><tr><tt>", "<thead><body><tr>"], a: 1 },
+        { id: 12, section: "HTML", q: "Inline elements are normally displayed without starting a new line.", o: ["True", "False"], a: 0 },
+        { id: 13, section: "HTML", q: "How can you make a numbered list?", o: ["<ul>", "<ol>", "<list>", "<dl>"], a: 1 },
+        { id: 14, section: "HTML", q: "How can you make a bulleted list?", o: ["<ol>", "<list>", "<ul>", "<dl>"], a: 2 },
+        { id: 15, section: "HTML", q: "What is the correct HTML for making a checkbox?", o: ["<check>", "<input type=\"checkbox\">", "<checkbox>", "<input type=\"check\">"], a: 1 },
+        { id: 16, section: "HTML", q: "What is the correct HTML for making a text input area?", o: ["<input type=\"textbox\">", "<input type=\"text\">", "<textinput>", "<textarea>"], a: 1 },
+        { id: 17, section: "HTML", q: "What is the correct HTML for inserting an image?", o: ["<image src=\"image.gif\" alt=\"MyImage\">", "<img href=\"image.gif\" alt=\"MyImage\">", "<img src=\"image.gif\" alt=\"MyImage\">", "<img alt=\"MyImage\">image.gif</img>"], a: 2 },
+        { id: 18, section: "HTML", q: "What is the correct HTML for inserting a comment?", o: ["<!-- Comment -->", "' Comment", "// Comment", "<comment>Comment</comment>"], a: 0 },
+        { id: 19, section: "HTML", q: "Which HTML element defines the title of a document?", o: ["<meta>", "<head>", "<title>", "<header>"], a: 2 },
+        { id: 20, section: "HTML", q: "Which HTML attribute specifies an alternate text for an image, if the image cannot be displayed?", o: ["title", "src", "longdesc", "alt"], a: 3 },
 
-            // Global Security Tab Strike Vectors
-            let visibilityStrikes = 0;
-            const maxStrikes = 3;
+        // CSS Section (21-40)
+        { id: 21, section: "CSS", q: "What does CSS stand for?", o: ["Creative Style Sheets", "Cascading Style Sheets", "Computer Style Sheets", "Colorful Style Sheets"], a: 1 },
+        { id: 22, section: "CSS", q: "What is the correct HTML shortcut for referring to an external style sheet?", o: ["<style src=\"mystyle.css\">", "<link rel=\"stylesheet\" type=\"text/css\" href=\"mystyle.css\">", "<stylesheet>mystyle.css</stylesheet>", "<link href=\"mystyle.css\">"], a: 1 },
+        { id: 23, section: "CSS", q: "Where in an HTML document is the correct place to refer to an external style sheet?", o: ["In the <body> section", "At the end of the document", "In the <head> section", "Inside the <html> tag"], a: 2 },
+        { id: 24, section: "CSS", q: "Which HTML tag is used to define an internal style sheet?", o: ["<css>", "<script>", "<style>", "<div style=\"\">"], a: 2 },
+        { id: 25, section: "CSS", q: "Which HTML attribute is used to define inline styles?", o: ["class", "styles", "font", "style"], a: 3 },
+        { id: 26, section: "CSS", q: "Which is the correct CSS syntax?", o: ["body {color: black;}", "{body;color:black;}", "body:color=black;", "{body:color=black;}"], a: 0 },
+        { id: 27, section: "CSS", q: "How do you insert a comment in a CSS file?", o: ["// this is a comment", "/* this is a comment */", "' this is a comment", "// this is a comment //"], a: 1 },
+        { id: 28, section: "CSS", q: "Which property is used to change the background color?", o: ["color", "bgcolor", "background-color", "background:color"], a: 2 },
+        { id: 29, section: "CSS", q: "How do you add a background color for all <h1> elements?", o: ["h1.all {background-color:#FFFFFF;}", "h1 {background-color:#FFFFFF;}", "all.h1 {background-color:#FFFFFF;}", "h1 {bg-color:#FFFFFF;}"], a: 1 },
+        { id: 30, section: "CSS", q: "Which CSS property is used to change the text color of an element?", o: ["text-color", "fgcolor", "color", "font-color"], a: 2 },
+        { id: 31, section: "CSS", q: "Which CSS property controls the text size?", o: ["text-style", "font-size", "text-size", "font-style"], a: 1 },
+        { id: 32, section: "CSS", q: "What is the correct CSS syntax for making all the <p> elements bold?", o: ["p {font-weight:bold;}", "p {text-size:bold;}", "<p style=\"font-size:bold;\">", "p {font:bold;}"], a: 0 },
+        { id: 33, section: "CSS", q: "How do you display hyperlinks without an underline?", o: ["a {text-decoration:none;}", "a {text-underline:none;}", "a {underline:none;}", "a {decoration:no-underline;}"], a: 0 },
+        { id: 34, section: "CSS", q: "How do you make each word in a text start with a capital letter?", o: ["text-transform:capitalize", "text-style:capitalize", "You cannot do that with CSS", "text-transform:uppercase"], a: 0 },
+        { id: 35, section: "CSS", q: "Which property is used to change the font of an element?", o: ["font-style", "font-weight", "font-family", "font-type"], a: 2 },
+        { id: 36, section: "CSS", q: "How do you make the text bold?", o: ["font:bold;", "font-weight:bold;", "style:bold;", "font-size:bold;"], a: 1 },
+        { id: 37, section: "CSS", q: "How do you display a border like this: Top border = 10px, Bottom border = 5px, Left border = 20px, Right border = 1px?", o: ["border-width:10px 1px 5px 20px;", "border-width:10px 20px 5px 1px;", "border-width:10px 5px 20px 1px;", "border-width:5px 20px 10px 1px;"], a: 0 },
+        { id: 38, section: "CSS", q: "Which property is used to change the left margin of an element?", o: ["padding-left", "margin-left", "indent", "margin-padding-left"], a: 1 },
+        { id: 39, section: "CSS", q: "When using the padding property; are you allowed to use negative values?", o: ["Yes", "No"], a: 1 },
+        { id: 40, section: "CSS", q: "How do you select an element with id 'demo'?", o: [".demo", "#demo", "*demo", "demo"], a: 1 },
 
-            // Absolute Event Hook for Page/Tab Visibility Changes
-            document.addEventListener("visibilitychange", () => {
-                if (document.hidden) {
-                    visibilityStrikes++;
-                    
-                    // Update the live proctor panel state dynamically
-                    statusBadge.innerText = `🚨 SECURITY VIOLATION: Tab Switch Detected! (Strike ${visibilityStrikes}/${maxStrikes})`;
-                    statusBadge.style.background = "#fee2e2";
-                    statusBadge.style.color = "#dc2626";
-                    statusBadge.style.borderColor = "#f87171";
+        // JavaScript Section (41-65)
+        { id: 41, section: "JavaScript", q: "Inside which HTML element do we put the JavaScript?", o: ["<js>", "<scripting>", "<script>", "<javascript>"], a: 2 },
+        { id: 42, section: "JavaScript", q: "What is the correct HTML syntax for referring to an external script called 'xxx.js'?", o: ["<script href=\"xxx.js\">", "<script name=\"xxx.js\">", "<script src=\"xxx.js\">", "<script file=\"xxx.js\">"], a: 2 },
+        { id: 43, section: "JavaScript", q: "How do you write 'Hello World' in an alert box?", o: ["msgBox(\"Hello World\");", "alertBox(\"Hello World\");", "msg(\"Hello World\");", "alert(\"Hello World\");"], a: 3 },
+        { id: 44, section: "JavaScript", q: "How do you create a function in JavaScript?", o: ["function = myFunction()", "function myFunction()", "function:myFunction()", "new function()"], a: 1 },
+        { id: 45, section: "JavaScript", q: "How do you call a function named 'myFunction'?", o: ["call myFunction()", "myFunction()", "call function myFunction()", "execute myFunction()"], a: 1 },
+        { id: 46, section: "JavaScript", q: "How to write an IF statement in JavaScript?", o: ["if i = 5 then", "if i == 5 then", "if (i == 5)", "if i = 5"], a: 2 },
+        { id: 47, section: "JavaScript", q: "How to write an IF statement for executing some code if 'i' is NOT equal to 5?", o: ["if (i <> 5)", "if i <> 5", "if (i != 5)", "if i =! 5 then"], a: 2 },
+        { id: 48, section: "JavaScript", q: "How does a WHILE loop start?", o: ["while i = 1 to 10", "while (i <= 10)", "while i <= 10 into", "loop while (i <= 10)"], a: 1 },
+        { id: 49, section: "JavaScript", q: "How does a FOR loop start?", o: ["for (i = 0; i <= 5; i++)", "for (i <= 5; i++)", "for i = 1 to 5", "for (i = 0; i <= 5)"], a: 0 },
+        { id: 50, section: "JavaScript", q: "How can you add a comment in a JavaScript?", o: ["' This is a comment", "<!-- This is a comment -->", "// This is a comment", "* This is a comment"], a: 2 },
+        { id: 51, section: "JavaScript", q: "What is the correct way to write a JavaScript array?", o: ["var colors = 1 = ('red'), 2 = ('green'), 3 = ('blue')", "var colors = (1:'red', 2:'green', 3:'blue')", "var colors = ['red', 'green', 'blue']", "var colors = 'red', 'green', 'blue'"], a: 2 },
+        { id: 52, section: "JavaScript", q: "How do you round the number 7.25, to the nearest integer?", o: ["round(7.25)", "Math.rnd(7.25)", "Math.round(7.25)", "rnd(7.25)"], a: 2 },
+        { id: 53, section: "JavaScript", q: "How do you find the number with the highest value of x and y?", o: ["Math.max(x, y)", "ceil(x, y)", "Math.ceil(x, y)", "top(x, y)"], a: 0 },
+        { id: 54, section: "JavaScript", q: "What is the correct JavaScript syntax for opening a new window called 'w3s'?", o: ["w3s = window.open('http://www.w3schools.com');", "w3s = window.new('http://www.w3schools.com');", "w3s = window.create('http://www.w3schools.com');", "window.load('http://www.w3schools.com', 'w3s');"], a: 0 },
+        { id: 55, section: "JavaScript", q: "JavaScript is the same as Java.", o: ["True", "False"], a: 1 },
+        { id: 56, section: "JavaScript", q: "How can you detect the client's browser name?", o: ["client.navName", "browser.name", "navigator.appName", "window.browser"], a: 2 },
+        { id: 57, section: "JavaScript", q: "Which event occurs when the user clicks on an HTML element?", o: ["onmouseclick", "onchange", "onmouseover", "onclick"], a: 3 },
+        { id: 58, section: "JavaScript", q: "How do you declare a JavaScript variable?", o: ["variable carName;", "v carName;", "var carName;", "string carName;"], a: 2 },
+        { id: 59, section: "JavaScript", q: "Which operator is used to assign a value to a variable?", o: ["*", "-", "=", "x"], a: 2 },
+        { id: 60, section: "JavaScript", q: "What will the following code return: Boolean(10 > 9)", o: ["true", "false", "NaN", "undefined"], a: 0 },
+        { id: 61, section: "JavaScript", q: "Is JavaScript case-sensitive?", o: ["Yes", "No"], a: 0 },
+        { id: 62, section: "JavaScript", q: "Which built-in method returns the length of the string?", o: ["length()", "size()", "index()", "None of the above (it's a property: .length)"], a: 3 },
+        { id: 63, section: "JavaScript", q: "Which closure syntax is used to define an arrow function?", o: ["() => {}", "function() => {}", "-> {}", "def()"], a: 0 },
+        { id: 64, section: "JavaScript", q: "What is the result of '5' + 5 in JavaScript?", o: ["10", "55", "Error", "NaN"], a: 1 },
+        { id: 65, section: "JavaScript", q: "Which method removes the last element from an array?", o: ["pop()", "push()", "shift()", "unshift()"], a: 0 }
+    ];
 
-                    // Display an immediate modal browser warning alert
-                    alert(`SECURITY WARNING:\nYou have navigated away from the exam terminal. Tab switching is strictly prohibited.\nStrike count: ${visibilityStrikes} / ${maxStrikes}.\nReaching maximum strikes will result in automatic submission.`);
+    // Build Form Interface Dynamically
+    const container = document.getElementById('quizContainer');
+    let currentSection = "";
 
-                    // Enforce automatic submission if threshold is crossed
-                    if (visibilityStrikes >= maxStrikes) {
-                        alert("Maximum security integrity violations reached. Submitting exam immediately.");
-                        handleSubmit(new Event('submit'));
-                    }
-                }
-            });
+    questions.forEach((item, index) => {
+        if (currentSection !== item.section) {
+            currentSection = item.section;
+            const sectionHeader = document.createElement('h2');
+            sectionHeader.className = 'section-title';
+            sectionHeader.innerText = `${currentSection} Section`;
+            container.appendChild(sectionHeader);
+        }
 
-            try {
-                // Initialize user interface media interface context
-                const stream = await navigator.mediaDevices.getUserMedia({ 
-                    video: { width: 640, height: 480 }, 
-                    audio: false 
-                });
-                video.srcObject = stream;
+        const card = document.createElement('div');
+        card.className = 'question-card';
+        card.id = `q-card-${index}`;
 
-                video.onloadedmetadata = () => {
-                    // Match visual context canvas pixels directly with standard hardware source feeds
-                    canvas.width = video.videoWidth;
-                    canvas.height = video.videoHeight;
-                    
-                    statusBadge.innerText = "⏳ Loading AI Vision Models...";
-                    statusBadge.style.background = "#fef3c7";
-                    statusBadge.style.color = "#92400e";
-                    
-                    initAIVectorEngines();
-                };
-            } catch (err) {
-                statusBadge.innerText = "❌ Security Integrity Violation: Camera Blocked";
-                statusBadge.style.background = "#fee2e2";
-                statusBadge.style.color = "#dc2626";
-            }
+        const qText = document.createElement('div');
+        qText.className = 'question-text';
+        qText.textContent = `${index + 1}. ${item.q}`;
+        card.appendChild(qText);
 
-            async function initAIVectorEngines() {
-                try {
-                    // Load Object Detection Engine Matrix
-                    const objectModel = await cocoSsd.load();
-                    
-                    // Conditionally attempt to load Face API metrics
-                    if (typeof faceapi !== 'undefined') {
-                        await faceapi.nets.tinyFaceDetector.loadFromUri('/models');
-                    }
+        const optionsUl = document.createElement('ul');
+        optionsUl.className = 'options-list';
 
-                    statusBadge.innerText = "🛡️ AI Core Guard Active";
-                    statusBadge.style.background = "#dcfce7";
-                    statusBadge.style.color = "#14532d";
+        item.o.forEach((option, oIdx) => {
+            const li = document.createElement('li');
+            li.className = 'option-item';
+            li.id = `opt-${index}-${oIdx}`;
+            
+            const radio = document.createElement('input');
+            radio.type = 'radio';
+            radio.name = `question-${index}`;
+            radio.value = oIdx;
+            radio.id = `radio-${index}-${oIdx}`;
 
-                    // Start continuous loop at ~15 Frames Per Second
-                    setInterval(async () => {
-                        if (video.readyState === video.HAVE_ENOUGH_DATA) {
-                            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const label = document.createElement('label');
+            label.htmlFor = `radio-${index}-${oIdx}`;
+            label.textContent = option;
+            label.style.cursor = 'pointer';
+            label.style.width = '100%';
 
-                            // Execute calculations
-                            const predictions = await objectModel.detect(video);
-                            let flagCount = 0;
-                            
-                            predictions.forEach(prediction => {
-                                // Render individual tracking boxes overlay paths
-                                ctx.strokeStyle = "#2563eb";
-                                ctx.lineWidth = 4;
-                                ctx.strokeRect(...prediction.bbox);
-
-                                // Append metadata descriptors over active components
-                                ctx.fillStyle = "#2563eb";
-                                ctx.font = "bold 16px sans-serif";
-                                ctx.fillText(
-                                    `${prediction.class} (${Math.round(prediction.score * 100)}%)`, 
-                                    prediction.bbox[0], 
-                                    prediction.bbox[1] > 20 ? prediction.bbox[1] - 8 : 15
-                                );
-
-                                // Validate standard object parameters against tracking restrictions
-                                if (["cell phone", "book", "laptop"].includes(prediction.class)) {
-                                    flagCount++;
-                                }
-                            });
-
-                            // Only alter state if a tab switch alert isn't overriding the warning space
-                            if (!statusBadge.innerText.includes("🚨")) {
-                                if (flagCount > 0) {
-                                    statusBadge.innerText = "⚠️ Flagged: Unauthorized Material Detected";
-                                    statusBadge.style.background = "#fee2e2";
-                                    statusBadge.style.color = "#dc2626";
-                                    statusBadge.style.borderColor = "#f87171";
-                                } else {
-                                    statusBadge.innerText = "🛡️ AI Core Guard Active";
-                                    statusBadge.style.background = "#dcfce7";
-                                    statusBadge.style.color = "#14532d";
-                                    statusBadge.style.borderColor = "transparent";
-                                }
-                            }
-                        }
-                    }, 66);
-                } catch (e) {
-                    console.error("AI Context Init Failure: ", e);
-                    statusBadge.innerText = "⚠️ Security Integrity Warning: Fallback Enabled";
-                }
-            }
+            li.appendChild(radio);
+            li.appendChild(label);
+            optionsUl.appendChild(li);
         });
-    </script>
+
+        card.appendChild(optionsUl);
+        container.appendChild(card);
+    });
+
+    // Countdown Timer Logic
+    let timeLeft = 60 * 60; 
+    const timerDisplay = document.getElementById('timerDisplay');
+    const timerInterval = setInterval(() => {
+        if (timeLeft <= 0) {
+            clearInterval(timerInterval);
+            timerDisplay.innerText = "Time's up!";
+            handleSubmit(new Event('submit'));
+        } else {
+            timeLeft--;
+            let minutes = Math.floor(timeLeft / 60);
+            let seconds = timeLeft % 60;
+            timerDisplay.innerText = `Time Left: ${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+    }, 1000);
+
+    // Form Submission Processing
+    function handleSubmit(e) {
+        if (e) e.preventDefault();
+        clearInterval(timerInterval);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+
+        let score = 0;
+        const form = document.getElementById('quizForm');
+        const formData = new FormData(form);
+
+        questions.forEach((item, index) => {
+            const selectedAnswer = formData.get(`question-${index}`);
+            const correctAnswerIdx = item.a;
+
+            document.getElementById(`opt-${index}-${correctAnswerIdx}`).classList.add('correct');
+
+            if (selectedAnswer !== null) {
+                const selectedIdx = parseInt(selectedAnswer);
+                if (selectedIdx === correctAnswerIdx) {
+                    score++;
+                } else {
+                    document.getElementById(`opt-${index}-${selectedIdx}`).classList.add('incorrect');
+                }
+            }
+            
+            item.o.forEach((_, oIdx) => {
+                document.getElementById(`radio-${index}-${oIdx}`).disabled = true;
+            });
+        });
+
+        const resultsDiv = document.getElementById('results');
+        const percentage = ((score / questions.length) * 100).toFixed(1);
+        resultsDiv.innerHTML = `Exam Completed!<br>Your Score: ${score} / ${questions.length} (${percentage}%)`;
+        resultsDiv.style.display = 'block';
+        
+        const submitBtn = document.querySelector('.btn-submit');
+        if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.style.opacity = '0.5';
+            submitBtn.innerText = "Exam Evaluated";
+        }
+    }
+
+    document.getElementById('quizForm').addEventListener('submit', handleSubmit);
+
+
+    // ==========================================
+    // 2. REAL-TIME VISION ENFORCEMENT GRID
+    // ==========================================
+    document.addEventListener("DOMContentLoaded", async () => {
+        const video = document.getElementById('proctorFeed');
+        const canvas = document.getElementById('proctorCanvas');
+        const statusBadge = document.getElementById('proctorStatus');
+        const ctx = canvas.getContext('2d');
+
+        const PROHIBITED_ITEMS = ["cell phone", "book", "laptop", "tablet", "paper", "notes"];
+
+        let persistence = {
+            faceMissing: 0,
+            multipleFaces: 0,
+            unauthorizedObject: 0
+        };
+
+        const FPS = 15;
+        const REPORT_COOLDOWN = 8000;
+        let lastReportTime = {};
+
+        function canReport(type) {
+            const now = Date.now();
+            if (!lastReportTime[type] || (now - lastReportTime[type]) > REPORT_COOLDOWN) {
+                lastReportTime[type] = now;
+                return true;
+            }
+            return false;
+        }
+
+        // Camera Initialization
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ video: { width: 640, height: 480 }, audio: false });
+            video.srcObject = stream;
+            video.onloadedmetadata = () => {
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                initAIVectorEngines();
+            };
+        } catch (err) {
+            if (window.ViolationsEngine) {
+                window.ViolationsEngine.report({
+                    type: 'camera_blocked',
+                    confidence: 1.0,
+                    description: "Webcam access denied or hardware disconnected.",
+                    screenshot: null,
+                    persistenceDuration: 0
+                });
+            }
+            if (statusBadge) statusBadge.innerText = "❌ Hardware Access Denied";
+        }
+
+        // AI Detection Loop
+        async function initAIVectorEngines() {
+            try {
+                if (typeof cocoSsd === 'undefined') {
+                    console.warn("⚠️ COCO-SSD library not loaded.");
+                    if (statusBadge) statusBadge.innerText = "🟢 AI Vision Standby";
+                    return;
+                }
+
+                const objectModel = await cocoSsd.load();
+                if (statusBadge) statusBadge.innerText = "🟢 Active Enforcement Grid";
+                
+                setInterval(async () => {
+                    if (video.readyState === video.HAVE_ENOUGH_DATA) {
+                        ctx.clearRect(0, 0, canvas.width, canvas.height);
+                        const predictions = await objectModel.detect(video);
+
+                        let personCount = 0;
+                        let detectedObjects = [];
+                        let highestObjectConfidence = 0;
+
+                        predictions.forEach(p => {
+                            if (p.class === "person") personCount++;
+                            
+                            if (PROHIBITED_ITEMS.includes(p.class)) {
+                                detectedObjects.push(p.class);
+                                if (p.score > highestObjectConfidence) highestObjectConfidence = p.score;
+                            }
+
+                            const isViolation = PROHIBITED_ITEMS.includes(p.class) || (p.class === "person" && personCount > 1);
+                            ctx.strokeStyle = isViolation ? "#dc2626" : "#2563eb";
+                            ctx.lineWidth = 3;
+                            ctx.strokeRect(...p.bbox);
+                            ctx.fillStyle = isViolation ? "#dc2626" : "#2563eb";
+                            ctx.fillText(`${p.class} (${Math.round(p.score * 100)}%)`, p.bbox[0], p.bbox[1] > 20 ? p.bbox[1] - 8 : 15);
+                        });
+
+                        // Face Missing Evaluation
+                        if (personCount === 0) {
+                            persistence.faceMissing++;
+                            const durationSec = Math.floor(persistence.faceMissing / FPS);
+                            
+                            if (durationSec >= 2 && canReport('face_missing')) {
+                                window.ViolationsEngine.report({
+                                    type: 'face_missing',
+                                    confidence: 0.90,
+                                    description: `No candidate detected in camera frame for ${durationSec} seconds.`,
+                                    screenshot: window.ProctorCapture ? window.ProctorCapture.grabSnapshot('proctorFeed') : null,
+                                    persistenceDuration: durationSec
+                                });
+                            }
+                        } else {
+                            persistence.faceMissing = 0;
+                        }
+
+                        // Multiple Faces Evaluation
+                        if (personCount > 1) {
+                            persistence.multipleFaces++;
+                            const durationSec = Math.floor(persistence.multipleFaces / FPS);
+
+                            if (canReport('multiple_faces')) {
+                                window.ViolationsEngine.report({
+                                    type: 'multiple_faces',
+                                    confidence: 0.95,
+                                    description: `Multiple persons (${personCount}) detected in view for ${durationSec} seconds.`,
+                                    screenshot: window.ProctorCapture ? window.ProctorCapture.grabSnapshot('proctorFeed') : null,
+                                    persistenceDuration: durationSec
+                                });
+                            }
+                        } else {
+                            persistence.multipleFaces = 0;
+                        }
+
+                        // Prohibited Objects Evaluation
+                        if (detectedObjects.length > 0) {
+                            persistence.unauthorizedObject++;
+                            const durationSec = Math.floor(persistence.unauthorizedObject / FPS);
+
+                            if (canReport('unauthorized_object')) {
+                                window.ViolationsEngine.report({
+                                    type: 'unauthorized_object',
+                                    confidence: parseFloat(highestObjectConfidence.toFixed(2)),
+                                    description: `Prohibited object(s) [${detectedObjects.join(', ')}] detected in candidate space.`,
+                                    screenshot: window.ProctorCapture ? window.ProctorCapture.grabSnapshot('proctorFeed') : null,
+                                    persistenceDuration: durationSec
+                                });
+                            }
+                        } else {
+                            persistence.unauthorizedObject = 0;
+                        }
+                    }
+                }, 1000 / FPS);
+            } catch (err) {
+                console.error("❌ AI Object Detection Error:", err);
+            }
+        }
+    });
+</script>
+
 </body>
 </html>

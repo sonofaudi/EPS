@@ -1,29 +1,35 @@
 /* ==========================================================================
-   GLOBAL STYLES & VARIABLE SYSTEM
+   1. CUSTOM VARIABLES & THEMING
    ========================================================================== */
-
 :root {
     /* Color Palette */
-    --bg-dark: #0f172a;
-    --bg-surface: #1e293b;
-    --bg-surface-hover: #334155;
+    --bg-dark: #eeeeee;          /* Deep command-center background */
+    --bg-surface: #d5d5ff4f;       /* Card & element surface background */
+    --bg-surface-hover: #1e293b; /* Subtle hover state */
     
-    --text-main: #f8fafc;
-    --text-muted: #94a3b8;
+    --text-main: #3d3d3d;        /* High-contrast crisp white text */
+    --text-muted: #64748b;       /* Cool gray for sub-details */
     
-    /* Semantic Alert System */
-    --accent-primary: #38bdf8;  /* Info / Active */
-    --accent-warning: #f59e0b;  /* Warnings */
-    --accent-critical: #ef4444; /* Terminations / Critical */
-    --accent-success: #10b981;  /* Secure status */
+    /* Semantic Status Accents */
+    --accent-primary: #10b981;   /* Info / Ongoing / Identity Checks */
+    --accent-warning: #f59e0b;   /* Mid-level flag triggers / Warnings */
+    --accent-critical: #f43f5e;  /* Session terminations / Force lockouts */
+    --accent-success: #10b981;   /* Active secure connections / Passed status */
     
     /* Borders & Rounding */
-    --border-color: #334155;
+    --border-color: #1e293b47;     /* Clean element framing border */
     --radius-lg: 12px;
     --radius-md: 8px;
-    --transition-fast: 0.2s ease;
+    --radius-sm: 4px;
+    
+    /* Global Transitions */
+    --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-smooth: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+/* ==========================================================================
+   2. SYSTEM RESETS & BASE STYLES
+   ========================================================================== */
 * {
     margin: 0;
     padding: 0;
@@ -35,6 +41,8 @@ body {
     background-color: var(--bg-dark);
     color: var(--text-main);
     line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
     overflow-x: hidden;
 }
 
@@ -43,21 +51,46 @@ button {
     cursor: pointer;
     border: none;
     outline: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+/* Custom Scrollbars for Dashboard Panels */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: rgba(100, 116, 139, 0.2);
+    border-radius: var(--radius-sm);
+    transition: background var(--transition-fast);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(100, 116, 139, 0.45);
 }
 
 /* ==========================================================================
-   LAYOUT STRUCTURE
+   3. CORE DASHBOARD CONTAINER & HEADER
    ========================================================================== */
-
 .dashboard-container {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
     padding: 1.5rem;
     gap: 1.5rem;
+    max-width: 1800px;
+    margin: 0 auto;
 }
 
-/* Header / Top Navigation */
+/* Top Administration Header */
 .admin-header {
     display: flex;
     justify-content: space-between;
@@ -75,37 +108,41 @@ button {
 }
 
 .admin-logo {
-    height: 45px;
+    height: 48px;
     width: auto;
     object-fit: contain;
+    filter: drop-shadow(0 2px 8px rgba(56, 189, 248, 0.2));
 }
 
 .brand h2 {
     font-size: 1.25rem;
     font-weight: 700;
     letter-spacing: -0.025em;
+    color: var(--text-main);
 }
 
 .brand p {
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     color: var(--text-muted);
 }
 
+/* Profile Badge & Secure Exit */
 .admin-profile {
     display: flex;
     align-items: center;
-    gap: 1.25rem;
+    gap: 1.5rem;
 }
 
 .admin-profile span {
-    font-size: 0.875rem;
+    font-size: 0.85rem;
+    font-weight: 600;
     color: var(--accent-success);
     display: flex;
     align-items: center;
     gap: 0.5rem;
 }
 
-/* Pulse indicator for live session */
+/* Breathing live pulse indicator */
 .admin-profile span::before {
     content: '';
     width: 8px;
@@ -113,37 +150,39 @@ button {
     background-color: var(--accent-success);
     border-radius: 50%;
     display: inline-block;
-    animation: pulse 2s infinite;
+    animation: livePulse 2s infinite ease-in-out;
 }
 
-@keyframes pulse {
-    0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
-    70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
-    100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+@keyframes livePulse {
+    0% { transform: scale(0.9); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.6); }
+    70% { transform: scale(1.1); box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+    100% { transform: scale(0.9); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
 }
 
 .btn-logout {
-    background-color: #273549;
+    background-color: rgba(100, 116, 139, 0.1);
+    border: 1px solid rgba(100, 116, 139, 0.15);
     color: var(--text-main);
     padding: 0.5rem 1rem;
     border-radius: var(--radius-md);
-    font-size: 0.875rem;
-    font-weight: 500;
-    transition: background-color var(--transition-fast);
+    font-size: 0.8rem;
+    font-weight: 600;
+    transition: all var(--transition-fast);
 }
 
 .btn-logout:hover {
-    background-color: var(--accent-critical);
+    background-color: rgba(244, 63, 94, 0.15);
+    border-color: rgba(244, 63, 94, 0.4);
+    color: var(--accent-critical);
 }
 
 /* ==========================================================================
-   ANALYTICS METRICS BAR
+   4. ANALYTICS STATS ROW
    ========================================================================== */
-
 .analytics-bar {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: 1rem;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.25rem;
 }
 
 .metric-card {
@@ -151,24 +190,29 @@ button {
     padding: 1.5rem;
     border-radius: var(--radius-lg);
     border: 1px solid var(--border-color);
-    position: relative;
-    overflow: hidden;
+    transition: transform var(--transition-fast), border-color var(--transition-fast);
+}
+
+.metric-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(255, 255, 255, 0.05);
 }
 
 .metric-card h3 {
-    font-size: 0.875rem;
+    font-size: 0.75rem;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.08em;
     color: var(--text-muted);
     margin-bottom: 0.5rem;
 }
 
 .metric-card p {
-    font-size: 2.25rem;
-    font-weight: 700;
+    font-size: 2.5rem;
+    font-weight: 800;
+    line-height: 1.1;
 }
 
-/* Colored accent indicator tabs on cards */
+/* Left Accent Board Lines */
 .card-total { border-left: 4px solid var(--accent-primary); }
 .card-warnings { border-left: 4px solid var(--accent-warning); }
 .card-critical { border-left: 4px solid var(--accent-critical); }
@@ -177,105 +221,322 @@ button {
 .card-warnings p { color: var(--accent-warning); }
 .card-critical p { color: var(--accent-critical); }
 
-
 /* ==========================================================================
-   MAIN DASHBOARD WORKSPACE GRID
+   5. WORKSPACE GRID SYSTEM
    ========================================================================== */
-
 .dashboard-grid {
     display: grid;
-    grid-template-columns: 2fr 1fr;
+    grid-template-columns: 2.2fr 1fr;
     gap: 1.5rem;
     align-items: start;
-}
-
-@media (max-width: 1024px) {
-    .dashboard-grid {
-        grid-template-columns: 1fr;
-    }
 }
 
 .grid-section {
     background-color: var(--bg-surface);
     border-radius: var(--radius-lg);
     border: 1px solid var(--border-color);
-    padding: 1.25rem;
+    padding: 1.5rem;
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 1.25rem;
 }
 
 .grid-section > h3 {
     font-size: 1rem;
-    font-weight: 600;
+    font-weight: 700;
+    letter-spacing: -0.01em;
     color: var(--text-main);
     border-bottom: 1px solid var(--border-color);
     padding-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
 }
 
-/* Inner containers with scrolling */
-.candidate-grid, .incident-stream {
-    min-height: 450px;
-    max-height: 650px;
+/* Shared Inner Panels Height Restraints */
+.candidate-grid, 
+.incident-stream {
+    min-height: 520px;
+    max-height: 680px;
     overflow-y: auto;
     position: relative;
+    padding-right: 0.25rem;
 }
 
-/* Custom Scrollbars */
-.candidate-grid::-webkit-scrollbar, 
-.incident-stream::-webkit-scrollbar {
-    width: 6px;
-}
-.candidate-grid::-webkit-scrollbar-thumb, 
-.incident-stream::-webkit-scrollbar-thumb {
-    background-color: var(--border-color);
-    border-radius: 3px;
-}
-
-/* Empty Placeholders */
-.grid-placeholder, .stream-placeholder {
+/* Empty State Layouts */
+.grid-placeholder, 
+.stream-placeholder {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     text-align: center;
     color: var(--text-muted);
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     width: 80%;
+    line-height: 1.6;
+    padding: 2rem;
+    border: 1px dashed rgba(100, 116, 139, 0.15);
+    border-radius: var(--radius-md);
 }
 
 /* ==========================================================================
-   MODAL WINDOW (INFRACTION EVIDENCE FRAME)
+   6. MONITORED STUDENTS GRID & CARDS
    ========================================================================== */
+.candidate-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    gap: 1.25rem;
+}
 
+.candidate-card {
+    background-color: rgba(9, 13, 22, 0.4);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 1.15rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 1rem;
+    position: relative;
+    transition: transform var(--transition-fast), border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.candidate-card:hover {
+    transform: translateY(-3px);
+    border-color: rgba(100, 116, 139, 0.25);
+    box-shadow: 0 12px 24px -10px rgba(0, 0, 0, 0.5);
+}
+
+/* Top indicator frames */
+.candidate-card.status-active { border-top: 4px solid var(--accent-success); }
+.candidate-card.status-pending { border-top: 4px solid var(--accent-primary); }
+.candidate-card.status-terminated { border-top: 4px solid var(--accent-critical); opacity: 0.65; }
+.candidate-card.status-completed { border-top: 4px solid var(--text-muted); }
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.status-indicator {
+    padding: 0.2rem 0.5rem;
+    border-radius: var(--radius-sm);
+    background-color: rgba(255, 255, 255, 0.03);
+    letter-spacing: 0.02em;
+}
+
+.status-active .status-indicator { color: var(--accent-success); background: rgba(16, 185, 129, 0.08); }
+.status-pending .status-indicator { color: var(--accent-primary); background: rgba(56, 189, 248, 0.08); }
+.status-terminated .status-indicator { color: var(--accent-critical); background: rgba(244, 63, 94, 0.08); }
+.status-completed .status-indicator { color: var(--text-muted); background: rgba(100, 116, 139, 0.08); }
+
+.violation-badge {
+    color: var(--accent-warning);
+    background-color: rgba(245, 158, 11, 0.08);
+    border: 1px solid rgba(245, 158, 11, 0.15);
+    padding: 0.2rem 0.5rem;
+    border-radius: var(--radius-sm);
+}
+
+/* Card Information Blocks */
+.card-body h4 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-main);
+    margin-bottom: 0.25rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.matric-num {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    font-family: monospace;
+    margin-bottom: 0.75rem;
+}
+
+.meta-field {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-bottom: 0.25rem;
+}
+
+.meta-field strong {
+    color: rgba(248, 250, 252, 0.85);
+}
+
+.card-footer {
+    border-top: 1px solid rgba(100, 116, 139, 0.1);
+    padding-top: 0.75rem;
+    display: flex;
+    justify-content: center;
+}
+
+.btn-terminate {
+    width: 100%;
+    background-color: rgba(244, 63, 94, 0.08);
+    color: var(--accent-critical);
+    border: 1px solid rgba(244, 63, 94, 0.2);
+    padding: 0.45rem;
+    border-radius: var(--radius-md);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    transition: all var(--transition-fast);
+}
+
+.btn-terminate:hover {
+    background-color: var(--accent-critical);
+    color: var(--text-main);
+    border-color: var(--accent-critical);
+    box-shadow: 0 4px 12px rgba(244, 63, 94, 0.3);
+}
+
+.session-end-time {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+/* ==========================================================================
+   7. LIVE INCIDENT FEED / ANOMALY ITEMS
+   ========================================================================== */
+.incident-item {
+    background-color: rgba(9, 13, 22, 0.3);
+    border: 1px solid var(--border-color);
+    border-left: 3px solid var(--accent-warning);
+    border-radius: var(--radius-md);
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+    margin-bottom: 0.75rem;
+    animation: incidentFadeIn 0.4s ease;
+}
+
+@keyframes incidentFadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.incident-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.incident-time {
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    font-family: monospace;
+}
+
+.incident-badge {
+    background-color: rgba(245, 158, 11, 0.1);
+    color: var(--accent-warning);
+    border: 1px solid rgba(245, 158, 11, 0.15);
+    padding: 0.15rem 0.4rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.65rem;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+}
+
+.incident-body {
+    font-size: 0.85rem;
+}
+
+.incident-body p strong {
+    color: var(--text-main);
+}
+
+.incident-body .desc {
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    margin-top: 0.25rem;
+    line-height: 1.4;
+}
+
+.incident-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    border-top: 1px solid rgba(100, 116, 139, 0.08);
+    padding-top: 0.6rem;
+    margin-top: 0.25rem;
+}
+
+.btn-view-evidence {
+    background-color: rgba(56, 189, 248, 0.08);
+    color: var(--accent-primary);
+    border: 1px solid rgba(56, 189, 248, 0.2);
+    padding: 0.3rem 0.6rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.75rem;
+    font-weight: 600;
+    transition: all var(--transition-fast);
+}
+
+.btn-view-evidence:hover {
+    background-color: var(--accent-primary);
+    color: var(--bg-dark);
+    border-color: var(--accent-primary);
+    box-shadow: 0 4px 12px rgba(56, 189, 248, 0.2);
+}
+
+.no-evidence {
+    font-style: italic;
+    color: var(--text-muted);
+}
+
+/* ==========================================================================
+   8. GLASSMORPHIC VISUAL EVIDENCE MODAL
+   ========================================================================== */
 .modal {
-    display: none; /* Controlled via JS */
+    display: none; /* Controlled programmatically via state.js */
     position: fixed;
     z-index: 1000;
     left: 0;
     top: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(15, 23, 42, 0.85);
-    backdrop-filter: blur(4px);
+    background-color: rgba(4, 6, 10, 0.85);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     align-items: center;
     justify-content: center;
+    opacity: 0;
+    transition: opacity var(--transition-smooth);
 }
 
-/* Change layout if display class is modified via script dynamically */
+/* When activated by JS */
 .modal.is-active {
     display: flex;
+    opacity: 1;
 }
 
 .modal-content {
     background-color: var(--bg-surface);
-    border: 1px solid var(--border-color);
+    border: 1px solid rgba(100, 116, 139, 0.2);
     border-radius: var(--radius-lg);
-    width: 90%;
+    width: 95%;
     max-width: 550px;
-    padding: 1.75rem;
+    padding: 2rem;
     position: relative;
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+    transform: translateY(20px);
+    transition: transform var(--transition-smooth);
+}
+
+.modal.is-active .modal-content {
+    transform: translateY(0);
 }
 
 .close-modal {
@@ -285,6 +546,7 @@ button {
     font-size: 1.75rem;
     color: var(--text-muted);
     cursor: pointer;
+    line-height: 1;
     transition: color var(--transition-fast);
 }
 
@@ -294,31 +556,43 @@ button {
 
 .modal-content h3 {
     font-size: 1.15rem;
+    font-weight: 700;
     margin-bottom: 1.25rem;
     padding-right: 2rem;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 0.75rem;
 }
 
+/* Metadata Box inside Modal */
 .modal-meta {
     background-color: var(--bg-dark);
-    padding: 1rem;
+    padding: 1rem 1.25rem;
     border-radius: var(--radius-md);
     border: 1px solid var(--border-color);
     margin-bottom: 1.25rem;
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
 }
 
 .modal-meta p {
     display: flex;
     justify-content: space-between;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+    padding-bottom: 0.25rem;
+}
+
+.modal-meta p:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
 }
 
 .modal-meta strong {
     color: var(--text-muted);
 }
 
+/* Modal Screenshot Holder */
 .modal-image-container {
     width: 100%;
     border-radius: var(--radius-md);
@@ -337,15 +611,53 @@ button {
     object-fit: cover;
 }
 
-.candidate-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 1rem;
+/* ==========================================================================
+   9. RESPONSIVE DESIGN BREAKPOINTS
+   ========================================================================== */
+@media (max-width: 1200px) {
+    .dashboard-grid {
+        grid-template-columns: 1.8fr 1fr;
+    }
 }
-.incident-item {
-    background: #1e293b;
-    padding: 0.75rem;
-    margin-bottom: 0.75rem;
-    border-radius: 6px;
-    border-left: 3px solid var(--accent-warning);
+
+@media (max-width: 1024px) {
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .candidate-grid, 
+    .incident-stream {
+        min-height: 400px;
+        max-height: 550px;
+    }
+}
+
+@media (max-width: 640px) {
+    .dashboard-container {
+        padding: 0.75rem;
+        gap: 1rem;
+    }
+
+    .admin-header {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+    }
+
+    .brand {
+        flex-direction: column;
+    }
+
+    .admin-profile {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .analytics-bar {
+        grid-template-columns: 1fr;
+    }
+
+    .candidate-grid {
+        grid-template-columns: 1fr;
+    }
 }

@@ -8,47 +8,38 @@ const path = require('path');
 
 const screenshotService = {
     /**
-     * Decodes Base64 image streams and saves them to the local file system
-     * @param {string} base64Data - Raw image data string from the client camera canvas
-     * @param {string} candidateId - The ID of the student (used for unique naming)
-     * @returns {string|null} - Relative URL path to access the file, or null if failed
+     * Decodes a base64 image data string and saves it to public/screenshots/
+     * @param {string} base64Data - Base64 string from canvas/ProctorCapture
+     * @param {string} candidateId - Candidate identifier for file naming
+     * @returns {string|null} - Accessible URL path (e.g., /screenshots/evidence_xxx.jpg)
      */
-    saveScreenshot(base64Data, candidateId) {
-        if (!base64Data) return null;
+    saveScreenshot: function (base64Data, candidateId) {
+        if (!base64Data || typeof base64Data !== 'string') return null;
 
         try {
-            // 1. Clean the incoming base64 payload header string if present
-            const matches = base64Data.match(/^data:image\/([A-Za-z-+\/]+);base64,(.+)$/);
-            let imageBuffer;
-            
-            if (matches && matches.length === 3) {
-                imageBuffer = Buffer.from(matches[2], 'base64');
-            } else {
-                // If it's already raw base64 data without the data:image prefix
-                imageBuffer = Buffer.from(base64Data, 'base64');
+            // Strip data prefix if present
+            const matches = base64Data.match(/^data:image\/([a-zA-Z]*);base64,(.+)$/);
+            const imageBuffer = matches 
+                ? Buffer.from(matches[2], 'base64') 
+                : Buffer.from(base64Data, 'base64');
+
+            const uploadDir = path.join(__dirname, '../public/screenshots');
+
+            // Ensure destination directory exists
+            if (!fs.existsSync(uploadDir)) {
+                fs.mkdirSync(uploadDir, { recursive: true });
             }
 
-            // 2. Define target directory mapping
-            const outputDir = path.join(__dirname, '../../public/screenshots');
-            
-            // Ensure the directory exists recursively
-            if (!fs.existsSync(outputDir)) {
-                fs.mkdirSync(outputDir, { recursive: true });
-            }
+            const cleanCandidate = (candidateId || 'anon').toString().replace(/[^a-zA-Z0-9]/g, '_');
+            const filename = `evidence_${cleanCandidate}_${Date.now()}.jpg`;
+            const filePath = path.join(uploadDir, filename);
 
-            // 3. Generate a distinct, timestamped filename
-            const filename = `evidence_${candidateId}_${Date.now()}.jpg`;
-            const fullPath = path.join(outputDir, filename);
+            fs.writeFileSync(filePath, imageBuffer);
 
-            // 4. Synchronously write the buffer stream to disk
-            fs.writeFileSync(fullPath, imageBuffer);
-            console.log(`📸 [Evidence Captured] Saved screenshot locally: ${filename}`);
-
-            // 5. Return the public web access path to be saved in MongoDB
-            return `/public/screenshots/${filename}`;
-
-        } catch (error) {
-            console.error("❌ Evidence Repository Writer Failure:", error);
+            // FIX: Express static serving handles /screenshots directly
+            return `/screenshots/${filename}`;
+        } catch (err) {
+            console.error('❌ Failed to persist screenshot buffer:', err.message);
             return null;
         }
     }

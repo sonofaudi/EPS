@@ -5,16 +5,10 @@
 
 const violationService = require('../services/violationService');
 
-/**
- * REST Endpoint: Receives and processes real-time AI security integrity alerts
- * @param {Object} req - Express Request context containing the body payload
- * @param {Object} res - Express Response context
- */
 exports.logViolation = async (req, res) => {
     try {
-        const { session, candidate, type, confidence, description, screenshot, timestamp } = req.body;
+        const { session, candidate, type, confidence, description, screenshot, timestamp, persistenceDuration } = req.body;
 
-        // Basic validation boundary check
         if (!type || !description) {
             return res.status(400).json({
                 success: false,
@@ -22,21 +16,22 @@ exports.logViolation = async (req, res) => {
             });
         }
 
-        // Delegate the complex task of saving to database and executing business logic to the service
-        const savedRecord = await violationService.handleNewViolation({
+        const result = await violationService.handleNewViolation({
             session,
             candidate,
             type,
             confidence,
             description,
             screenshot,
-            timestamp
+            timestamp,
+            persistenceDuration
         });
 
         return res.status(201).json({
             success: true,
-            message: "Proctoring anomaly recorded successfully into system architecture.",
-            data: savedRecord
+            message: "Proctoring telemetry recorded successfully.",
+            data: result.violation,
+            strikeInfo: result.strikeInfo
         });
 
     } catch (error) {
