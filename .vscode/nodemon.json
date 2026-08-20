@@ -1,0 +1,14 @@
+{
+  "verbose": true,
+  "ignore": [
+    "server/public/uploads/*",
+    "server/public/uploads/screenshots/*",
+    "public/screenshots/*",
+    "server/storage/*",
+    "*.log"
+  ],
+  "watch": [
+    "server/"
+  ],
+  "ext": "js,html,css"
+}

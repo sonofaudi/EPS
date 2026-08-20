@@ -1,106 +1,101 @@
+/**
+ * KASU Proctoring System - Violation Service Engine
+ * File Path: server/services/violationService.js
+ */
+
 const mongoose = require('mongoose');
 const Violation = require('../models/Violation');
+const Session = require('../models/Session');
 const screenshotService = require('./screenshotService');
 
-const ALLOWED_TYPES = [
-    'tab_switch',
-    'face_missing',
-    'multiple_faces',
-    'gaze_away',
-    'unauthorized_object',
-    'fullscreen_exit'
-];
+// Fallback valid Mongo ObjectIds for dummy/demo values
+const MOCK_SESSION_ID = new mongoose.Types.ObjectId("650000000000000000000001");
+const MOCK_CANDIDATE_ID = new mongoose.Types.ObjectId("650000000000000000000002");
 
-function calculateSeverity(type) {
-    switch (type) {
-        case 'unauthorized_object':
-        case 'multiple_faces':
-            return 'high';
-        case 'face_missing':
-        case 'tab_switch':
-            return 'medium';
-        case 'fullscreen_exit':
-        case 'gaze_away':
-            return 'low';
-        default:
-            return 'medium';
+/**
+ * Validates whether a string is a valid 24-character hex MongoDB ObjectId
+ */
+function toValidObjectId(idString, fallbackId) {
+    if (idString && mongoose.Types.ObjectId.isValid(idString) && String(new mongoose.Types.ObjectId(idString)) === idString) {
+        return idString;
     }
+    return fallbackId;
 }
 
-function resolveObjectId(idString) {
-    if (idString && mongoose.Types.ObjectId.isValid(idString)) {
-        return new mongoose.Types.ObjectId(idString);
-    }
-    // Static fallback for testing/demo mode
-    return new mongoose.Types.ObjectId("650000000000000000000001");
-}
-
-async function handleNewViolation(data) {
+/**
+ * Processes incoming violation payloads, saves frame screenshots to disk,
+ * and records the event in MongoDB.
+ */
+async function handleNewViolation(payload) {
     const {
-        session,
         sessionId,
-        candidate,
+        session,
         candidateId,
+        candidate,
         type,
-        confidence = 1.0,
-        description,
-        screenshot,
+        severity = 'medium',
+        description = '',
         screenshotUrl,
-        timestamp,
-        persistenceDuration = 0
-    } = data;
+        screenshot,
+        confidence = 1.0,
+        persistenceDuration = 0,
+        strikeEligible = true
+    } = payload;
 
-    const rawType = ALLOWED_TYPES.includes(type) ? type : 'unauthorized_object';
-    const targetSessionId = resolveObjectId(session || sessionId);
-    const targetCandidateId = resolveObjectId(candidate || candidateId);
+    // Resolve raw input strings
+    const rawSession = sessionId || session;
+    const rawCandidate = candidateId || candidate;
+    const rawScreenshot = screenshotUrl || screenshot;
 
-    const severity = calculateSeverity(rawType);
+    // Safely cast string IDs or replace mock strings with valid ObjectIds
+    const dbSessionId = toValidObjectId(rawSession, MOCK_SESSION_ID);
+    const dbCandidateId = toValidObjectId(rawCandidate, MOCK_CANDIDATE_ID);
 
-    // FIX 1: Every valid violation event is strike-eligible for exam enforcement
-    const strikeEligible = true;
-
-    // Process base64 evidence screenshot before MongoDB write
-    let finalScreenshotUrl = screenshotUrl || null;
-    const base64ImageData = screenshot || null;
-
-    if (base64ImageData && !finalScreenshotUrl) {
-        finalScreenshotUrl = screenshotService.saveScreenshot(
-            base64ImageData,
-            targetCandidateId.toString()
-        );
+    // 1. Process and save base64 screenshot image file to local disk
+    let savedImagePath = null;
+    if (rawScreenshot) {
+        savedImagePath = screenshotService.saveScreenshot(rawScreenshot, rawCandidate || 'candidate');
     }
 
-    // Persist Document to MongoDB
-    const violation = await Violation.create({
-        session: targetSessionId,
-        candidate: targetCandidateId,
-        type: rawType,
-        confidence: typeof confidence === 'number' ? confidence : 1.0,
+    // 2. Persist violation record in database
+    const newViolation = await Violation.create({
+        session: dbSessionId,
+        candidate: dbCandidateId,
+        type,
         severity,
-        strikeEligible,
-        persistenceDuration: persistenceDuration || 0,
-        description: description || `Integrity anomaly detected: ${rawType}`,
-        screenshotUrl: finalScreenshotUrl,
-        timestamp: timestamp || new Date()
+        description,
+        screenshotUrl: savedImagePath || rawScreenshot,
+        confidence,
+        persistenceDuration,
+        strikeEligible
     });
 
-    // Count authoritative strikes from MongoDB for this candidate + session
-    const currentStrikes = await Violation.countDocuments({
-        session: targetSessionId,
-        candidate: targetCandidateId,
-        strikeEligible: true
-    });
+    // 3. Increment session strike count if applicable
+    let strikeInfo = { applied: false, currentStrikes: 0, maxStrikes: 5, shouldTerminate: false };
 
-    const MAX_STRIKES = 5;
+    if (dbSessionId) {
+        const targetSession = await Session.findById(dbSessionId);
+        if (targetSession) {
+            if (strikeEligible) {
+                targetSession.strikeCount = (targetSession.strikeCount || 0) + 1;
+                if (targetSession.strikeCount >= 5) {
+                    targetSession.status = 'terminated';
+                }
+                await targetSession.save();
+            }
+
+            strikeInfo = {
+                applied: strikeEligible,
+                currentStrikes: targetSession.strikeCount,
+                maxStrikes: 5,
+                shouldTerminate: targetSession.strikeCount >= 5
+            };
+        }
+    }
 
     return {
-        violation,
-        strikeInfo: {
-            applied: strikeEligible,
-            currentStrikes,
-            maxStrikes: MAX_STRIKES,
-            shouldTerminate: currentStrikes >= MAX_STRIKES
-        }
+        violation: newViolation,
+        strikeInfo
     };
 }
 
