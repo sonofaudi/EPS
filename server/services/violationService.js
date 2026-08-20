@@ -31,7 +31,7 @@ function resolveObjectId(idString) {
     if (idString && mongoose.Types.ObjectId.isValid(idString)) {
         return new mongoose.Types.ObjectId(idString);
     }
-    // Fallback static ID for testing/demo mode
+    // Static fallback for testing/demo mode
     return new mongoose.Types.ObjectId("650000000000000000000001");
 }
 
@@ -56,7 +56,10 @@ async function handleNewViolation(data) {
 
     const severity = calculateSeverity(rawType);
 
-    // 1. Process screenshot evidence before DB write
+    // FIX 1: Every valid violation event is strike-eligible for exam enforcement
+    const strikeEligible = true;
+
+    // Process base64 evidence screenshot before MongoDB write
     let finalScreenshotUrl = screenshotUrl || null;
     const base64ImageData = screenshot || null;
 
@@ -67,9 +70,7 @@ async function handleNewViolation(data) {
         );
     }
 
-    const strikeEligible = ['high', 'critical'].includes(severity);
-
-    // 2. Persist DB Document
+    // Persist Document to MongoDB
     const violation = await Violation.create({
         session: targetSessionId,
         candidate: targetCandidateId,
@@ -83,14 +84,14 @@ async function handleNewViolation(data) {
         timestamp: timestamp || new Date()
     });
 
-    // 3. Official strike count calculation
+    // Count authoritative strikes from MongoDB for this candidate + session
     const currentStrikes = await Violation.countDocuments({
         session: targetSessionId,
         candidate: targetCandidateId,
         strikeEligible: true
     });
 
-    const MAX_STRIKES = 5; // Standardized authoritative strike policy
+    const MAX_STRIKES = 5;
 
     return {
         violation,

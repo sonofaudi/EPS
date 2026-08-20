@@ -1,5 +1,5 @@
 /**
- * KASU Proctoring System - Exam & Security Routing System
+ * KASU Proctoring System - Exam & Violation Routes
  * File Path: server/routes/exams.js
  */
 
@@ -7,7 +7,7 @@ const express = require('express');
 const router = express.Router();
 const examController = require('../controllers/examController');
 
-// Secure API Pipeline to capture and log AI-detected proctoring infractions
+// Map POST /api/violations directly to examController.logViolation
 router.post('/violations', examController.logViolation);
 
 module.exports = router;

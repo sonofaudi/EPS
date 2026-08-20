@@ -2,47 +2,46 @@
  * KASU Proctoring System - Evidence Storage Manager
  * File Path: server/services/screenshotService.js
  */
-
 const fs = require('fs');
 const path = require('path');
 
-const screenshotService = {
-    /**
-     * Decodes a base64 image data string and saves it to public/screenshots/
-     * @param {string} base64Data - Base64 string from canvas/ProctorCapture
-     * @param {string} candidateId - Candidate identifier for file naming
-     * @returns {string|null} - Accessible URL path (e.g., /screenshots/evidence_xxx.jpg)
-     */
-    saveScreenshot: function (base64Data, candidateId) {
-        if (!base64Data || typeof base64Data !== 'string') return null;
+// FIXED: Points directly to server/public/uploads/screenshots
+const UPLOAD_DIR = path.join(__dirname, '../public/uploads/screenshots');
 
-        try {
-            // Strip data prefix if present
-            const matches = base64Data.match(/^data:image\/([a-zA-Z]*);base64,(.+)$/);
-            const imageBuffer = matches 
-                ? Buffer.from(matches[2], 'base64') 
-                : Buffer.from(base64Data, 'base64');
+// Ensure directory exists
+if (!fs.existsSync(UPLOAD_DIR)) {
+    fs.mkdirSync(UPLOAD_DIR, { recursive: true });
+}
 
-            const uploadDir = path.join(__dirname, '../public/screenshots');
+function saveScreenshot(base64String, candidateId) {
+    if (!base64String) return null;
 
-            // Ensure destination directory exists
-            if (!fs.existsSync(uploadDir)) {
-                fs.mkdirSync(uploadDir, { recursive: true });
-            }
+    try {
+        // Strip data URI header if present
+        const matches = base64String.match(/^data:image\/([A-Za-z-+\/]+);base64,(.+)$/);
+        let buffer;
+        let extension = 'png';
 
-            const cleanCandidate = (candidateId || 'anon').toString().replace(/[^a-zA-Z0-9]/g, '_');
-            const filename = `evidence_${cleanCandidate}_${Date.now()}.jpg`;
-            const filePath = path.join(uploadDir, filename);
-
-            fs.writeFileSync(filePath, imageBuffer);
-
-            // FIX: Express static serving handles /screenshots directly
-            return `/screenshots/${filename}`;
-        } catch (err) {
-            console.error('❌ Failed to persist screenshot buffer:', err.message);
-            return null;
+        if (matches && matches.length === 3) {
+            extension = matches[1] === 'jpeg' ? 'jpg' : matches[1];
+            buffer = Buffer.from(matches[2], 'base64');
+        } else {
+            buffer = Buffer.from(base64String, 'base64');
         }
-    }
-};
 
-module.exports = screenshotService;
+        const filename = `violation_${candidateId}_${Date.now()}.${extension}`;
+        const filepath = path.join(UPLOAD_DIR, filename);
+
+        fs.writeFileSync(filepath, buffer);
+        console.log(`📸 Screenshot saved successfully: ${filename}`);
+
+        return `/uploads/screenshots/${filename}`;
+    } catch (error) {
+        console.error('❌ Failed to save screenshot:', error.message);
+        return null;
+    }
+}
+
+module.exports = {
+    saveScreenshot
+};
