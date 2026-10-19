@@ -11,6 +11,7 @@ const cors = require('cors');
 // Import Modular API Endpoint Routes
 const authRoutes = require('./routes/auth');
 const examRoutes = require('./routes/exams');
+const adminRoutes = require('./routes/admin');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -26,15 +27,13 @@ app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 app.use(express.static(path.join(__dirname, '../client')));
 
 // Static serving for public directory inside server (CSS, JS, uploads, screenshots)
-// Direct route mapping: exposes /public/uploads/screenshots/...
 app.use('/public', express.static(path.join(__dirname, 'public')));
-
-// Direct shortcut mapping: allows relative URLs like /uploads/screenshots/... to serve cleanly
 app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 
-// Bind API Endpoints
+// Bind API Endpoints (Order & Pathing Verified)
 app.use('/api/auth', authRoutes);
-app.use('/api', examRoutes); // Mounts /api/violations matching client calls
+app.use('/api/v1/exam', examRoutes);
+app.use('/api/v1/admin', adminRoutes);
 
 // ADMIN PORTAL SPA ROUTING FALLBACK
 app.get('/admin/:page', (req, res) => {

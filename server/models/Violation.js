@@ -13,7 +13,7 @@ const violationSchema = new mongoose.Schema({
     },
     candidate: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Candidate',
+        ref: 'Student', // <--- FIXED: Match the registered 'Student' model name
         required: true
     },
     type: {
@@ -25,12 +25,13 @@ const violationSchema = new mongoose.Schema({
             'multiple_faces',
             'gaze_away',
             'unauthorized_object',
-            'fullscreen_exit'
+            'fullscreen_exit',
+            'camera_blocked'
         ]
     },
     severity: {
         type: String,
-        enum: ['low', 'medium', 'high'],
+        enum: ['low', 'medium', 'high', 'critical'],
         default: 'medium'
     },
     confidence: {
@@ -61,5 +62,4 @@ const violationSchema = new mongoose.Schema({
     timestamps: true
 });
 
-// Authoritative export of the Mongoose Model
 module.exports = mongoose.model('Violation', violationSchema);

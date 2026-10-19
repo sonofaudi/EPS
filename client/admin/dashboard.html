@@ -1,84 +1,84 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KASU AI-Proctor | Invigilator Command Dashboard</title>
-    <link rel="stylesheet" href="/css/global.css">
-    <link rel="stylesheet" href="/css/dashboard.css">
+    <title>KASU EPS - Admin Integrity Monitor</title>
+    <link rel="stylesheet" href="../css/dashboard.css">
 </head>
 <body>
-    <div class="dashboard-container">
-        <!-- Top Navigation Bar -->
-        <header class="admin-header">
-            <div class="brand">
-                <img src="/assets/logo.png" alt="KASU Logo" class="admin-logo">
-                <div>
-                    <h2>KASU AI-Proctor</h2>
-                    <p>Live Examination Integrity Command Centre</p>
-                </div>
-            </div>
-            <div class="admin-profile">
-                <span>Invigilator Session Active</span>
-                <button id="btnLogout" class="btn-logout">Secure Sign Out</button>
-            </div>
-        </header>
 
-        <!-- Analytics Metric Cards Row -->
-        <section class="analytics-bar">
-            <div class="metric-card card-total">
-                <h3>Active Candidates</h3>
-                <p id="metricActiveCount">0</p>
-            </div>
-            <div class="metric-card card-warnings">
-                <h3>Total Warnings Issued</h3>
-                <p id="metricWarningCount">0</p>
-            </div>
-            <div class="metric-card card-critical">
-                <h3>Critical Terminations</h3>
-                <p id="metricCriticalCount">0</p>
-            </div>
-        </section>
-
-        <!-- Main Workspace Grid Layout -->
-        <main class="dashboard-grid">
-            <!-- Left Side: Live Candidate Tracking Cards Grid -->
-            <div class="grid-section candidate-grid-wrapper">
-                <h3>Monitored Sessions Grid</h3>
-                <div id="candidateGrid" class="candidate-grid">
-                    <!-- Dynamic client layout cards instantiate here -->
-                    <div class="grid-placeholder">No active examination sessions found.</div>
-                </div>
-            </div>
-
-            <!-- Right Side: Real-Time Security Incident Feed Stream -->
-            <div class="grid-section incident-feed-wrapper">
-                <h3>Live Anomaly Incident Stream</h3>
-                <div id="incidentStream" class="incident-stream">
-                    <!-- Instantaneous server push items append here -->
-                    <div class="stream-placeholder">Listening for real-time AI security vectors...</div>
-                </div>
-            </div>
-        </main>
+    <div class="header">
+        <h1>🛡️ KASU EPS — Integrity Incident Monitor</h1>
+        <button class="btn-view" onclick="fetchViolations()">🔄 Refresh Feed</button>
     </div>
 
-    <!-- Modal Evidence Repository Box overlay frame view -->
-    <div id="evidenceModal" class="modal">
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="label">Total Recorded Violations</div>
+            <div class="value" id="statTotal">0</div>
+        </div>
+        <div class="stat-card">
+            <div class="label">High/Critical Flags</div>
+            <div class="value" style="color: var(--accent-red);" id="statHigh">0</div>
+        </div>
+        <div class="stat-card">
+            <div class="label">Flagged Candidates</div>
+            <div class="value" style="color: var(--accent-yellow);" id="statCandidates">0</div>
+        </div>
+    </div>
+
+    <div class="filters">
+        <select id="severityFilter" onchange="fetchViolations()">
+            <option value="">All Severities</option>
+            <option value="critical">Critical</option>
+            <option value="high">High</option>
+            <option value="medium">Medium</option>
+            <option value="low">Low</option>
+        </select>
+
+        <select id="typeFilter" onchange="fetchViolations()">
+            <option value="">All Event Types</option>
+            <option value="face_missing">Face Missing</option>
+            <option value="multiple_faces">Multiple Faces</option>
+            <option value="unauthorized_object">Unauthorized Object</option>
+            <option value="tab_switch">Tab Switch</option>
+            <option value="window_blur">Window Blur</option>
+            <option value="screen_share_ended">Screen Share Terminated</option>
+        </select>
+    </div>
+
+    <table class="violations-table">
+        <thead>
+            <tr>
+                <th>Timestamp</th>
+                <th>Candidate ID</th>
+                <th>Event Type</th>
+                <th>Severity</th>
+                <th>Details</th>
+                <th>Evidence Snapshot</th>
+            </tr>
+        </thead>
+        <tbody id="violationsTableBody">
+            <tr><td colspan="6" style="text-align: center; color: var(--text-muted);">Loading live violation records...</td></tr>
+        </tbody>
+    </table>
+
+    <!-- Evidence Modal -->
+    <div class="modal" id="evidenceModal">
         <div class="modal-content">
-            <span class="close-modal">&times;</span>
-            <h3>Visual Infraction Evidence Frame</h3>
-            <div class="modal-meta">
-                <p><strong>Candidate:</strong> <span id="modalCandidate">---</span></p>
-                <p><strong>Infraction Type:</strong> <span id="modalType">---</span></p>
-                <p><strong>AI Confidence Score:</strong> <span id="modalConfidence">---</span></p>
+            <div class="modal-header">
+                <h3 id="modalTitle">Evidence Snapshot</h3>
+                <span class="close-btn" onclick="closeModal()">✕</span>
             </div>
-            <div class="modal-image-container">
-                <img id="modalEvidenceImage" src="" alt="Snapshot Frame Evidence Missing">
+            <div class="modal-body">
+                <img id="modalImage" src="" alt="Violation Screenshot Evidence">
+                <p id="modalDesc" style="margin-top: 12px; font-size: 0.85rem; color: var(--text-muted);"></p>
             </div>
         </div>
     </div>
 
-    <!-- State Logic Script Bindings -->
-    <script src="/js/admin/dashboard.js"></script>
+  <script src="../js/admin/dashboard.js"></script>
 </body>
 </html>

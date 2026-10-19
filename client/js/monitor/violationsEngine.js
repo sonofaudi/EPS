@@ -138,7 +138,8 @@
             console.log(`📡 Dispatching proctor event [${payload.type}] to backend...`);
 
             try {
-                const response = await fetch('http://localhost:5000/api/violations', {
+                // FIXED: Pointing POST requests to the correct exam violations endpoint
+                const response = await fetch('http://localhost:5000/api/v1/exam/violations', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)

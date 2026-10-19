@@ -1,141 +1,83 @@
+/**
+ * KASU Proctoring System - Admin Dashboard Client Controller
+ * File Path: server/public/admin/js/dashboard.js
+ */
+
 document.addEventListener('DOMContentLoaded', () => {
-    loadDashboardStats();
-    loadRecentViolations();
-
-    // Stage A Polling Fallbacks
-    setInterval(loadDashboardStats, 5000);
-    setInterval(loadRecentViolations, 3000);
-
-    setupModalEvents();
+    fetchViolations();
+    
+    // Poll the backend every 5 seconds for real-time violation updates
+    setInterval(fetchViolations, 5000);
 });
 
-async function loadDashboardStats() {
+async function fetchViolations() {
+    const severity = document.getElementById('severityFilter').value;
+    const type = document.getElementById('typeFilter').value;
+
+    let url = '/api/v1/admin/violations?';
+    const params = [];
+    if (severity) params.push(`severity=${severity}`);
+    if (type) params.push(`type=${type}`);
+    
+    if (params.length > 0) {
+        url += params.join('&');
+    }
+
     try {
-        const response = await fetch('/api/admin/dashboard-summary');
-        if (!response.ok) return;
+        const res = await fetch(url);
+        const data = await res.json();
 
-        const result = await response.json();
-        if (!result.success) return;
-
-        if (document.getElementById('metricActiveCount')) {
-            document.getElementById('metricActiveCount').textContent = result.stats?.activeStudents || 0;
+        if (data.success) {
+            updateStats(data.stats);
+            renderTable(data.violations);
         }
-        if (document.getElementById('metricWarningCount')) {
-            document.getElementById('metricWarningCount').textContent = result.stats?.totalViolations || 0;
-        }
-        if (document.getElementById('metricCriticalCount')) {
-            document.getElementById('metricCriticalCount').textContent = result.stats?.terminatedExams || 0;
-        }
-    } catch (error) {
-        console.error('Stats polling error:', error);
+    } catch (err) {
+        console.error("Failed to load violations:", err);
     }
 }
 
-async function loadRecentViolations() {
-    try {
-        const response = await fetch('/api/admin/violations');
-        if (!response.ok) return;
-
-        const result = await response.json();
-        if (!result.success) return;
-
-        renderIncidentStream(result.data || []);
-    } catch (error) {
-        console.error('Incident stream error:', error);
-    }
+function updateStats(stats) {
+    document.getElementById('statTotal').textContent = stats.total || 0;
+    document.getElementById('statHigh').textContent = stats.highSeverity || 0;
+    document.getElementById('statCandidates').textContent = stats.flaggedCandidates || 0;
 }
 
-function formatViolationType(type) {
-    return (type || 'VIOLATION').replace(/_/g, ' ').toUpperCase();
-}
-
-function escapeHtml(str) {
-    return String(str || '').replace(/[&<>"']/g, (m) => ({
-        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'
-    }[m]));
-}
-
-function renderIncidentStream(violations) {
-    const container = document.getElementById('incidentStream');
-    if (!container) return;
-
-    if (!violations.length) {
-        container.innerHTML = `<div class="stream-placeholder">No security incidents recorded.</div>`;
+function renderTable(violations) {
+    const tbody = document.getElementById('violationsTableBody');
+    if (!violations || violations.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-muted);">No violation records found matching the criteria.</td></tr>`;
         return;
     }
 
-    container.innerHTML = violations.map(v => {
-        const candidateName = v.candidate?.fullName || v.candidate?.registrationNumber || 'Unknown Candidate';
-        const confidence = Math.round((v.confidence || 0) * 100);
-        const screenshot = v.screenshotUrl || '';
-        const severity = (v.severity || 'medium').toLowerCase();
+    tbody.innerHTML = violations.map(v => {
+        const time = new Date(v.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        const candidateName = v.candidate ? (v.candidate.fullName || v.candidate.regNumber) : (v.candidate || 'DEMO_STUDENT');
+        const badgeClass = `badge-${v.severity || 'medium'}`;
 
         return `
-            <div class="incident-card severity-${severity}">
-                <div class="incident-header">
-                    <strong>${formatViolationType(v.type)}</strong>
-                    <span class="severity-badge ${severity}">${severity.toUpperCase()}</span>
-                </div>
-                <div class="incident-body">
-                    <p><strong>Candidate:</strong> ${escapeHtml(candidateName)}</p>
-                    <p><strong>Confidence:</strong> ${confidence}%</p>
-                    <p>${escapeHtml(v.description || '')}</p>
-                    <small>${new Date(v.timestamp).toLocaleTimeString()}</small>
-                </div>
-                ${screenshot ? `
-                    <button class="btn-evidence" data-evidence='${JSON.stringify({
-                        candidate: candidateName,
-                        type: v.type,
-                        confidence,
-                        screenshot
-                    }).replace(/'/g, "&apos;")}'>VIEW EVIDENCE</button>
-                ` : `
-                    <span class="no-evidence">Evidence unavailable</span>
-                `}
-            </div>
+            <tr>
+                <td>${time}</td>
+                <td><strong>${candidateName}</strong></td>
+                <td><code>${v.type}</code></td>
+                <td><span class="badge ${badgeClass}">${v.severity || 'medium'}</span></td>
+                <td>${v.description || 'N/A'}</td>
+                <td>
+                    ${v.screenshotUrl 
+                        ? `<button class="btn-view" onclick="viewEvidence('${v.screenshotUrl}', '${v.type}', '${v.description}')">🖼️ View Frame</button>` 
+                        : `<span style="color: var(--text-muted); font-size: 0.8rem;">No Capture</span>`}
+                </td>
+            </tr>
         `;
     }).join('');
-
-    // Attach click listeners to evidence buttons safely
-    container.querySelectorAll('.btn-evidence').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            const data = JSON.parse(e.currentTarget.getAttribute('data-evidence'));
-            openEvidenceModal(data);
-        });
-    });
 }
 
-function openEvidenceModal(data) {
-    const modal = document.getElementById('evidenceModal');
-    if (!modal) return;
-
-    if (document.getElementById('modalCandidate')) {
-        document.getElementById('modalCandidate').textContent = data.candidate;
-    }
-    if (document.getElementById('modalType')) {
-        document.getElementById('modalType').textContent = formatViolationType(data.type);
-    }
-    if (document.getElementById('modalConfidence')) {
-        document.getElementById('modalConfidence').textContent = `${data.confidence}%`;
-    }
-    if (document.getElementById('modalEvidenceImage')) {
-        document.getElementById('modalEvidenceImage').src = data.screenshot;
-    }
-
-    modal.style.display = 'flex';
+function viewEvidence(url, type, desc) {
+    document.getElementById('modalTitle').textContent = `Evidence: ${type}`;
+    document.getElementById('modalImage').src = url;
+    document.getElementById('modalDesc').textContent = desc || 'Frame captured during violation event.';
+    document.getElementById('evidenceModal').style.display = 'flex';
 }
 
-function setupModalEvents() {
-    const modal = document.getElementById('evidenceModal');
-    const closeButton = document.querySelector('.close-modal');
-
-    closeButton?.addEventListener('click', () => {
-        if (modal) modal.style.display = 'none';
-    });
-
-    window.addEventListener('click', (event) => {
-        if (event === modal) {
-            modal.style.display = 'none';
-        }
-    });
+function closeModal() {
+    document.getElementById('evidenceModal').style.display = 'none';
 }
