@@ -81,3 +81,23 @@ function viewEvidence(url, type, desc) {
 function closeModal() {
     document.getElementById('evidenceModal').style.display = 'none';
 }
+
+
+
+/**
+ * Handles administrative session termination and redirects to login
+ */
+function handleAdminLogout() {
+    // Clear any stored tokens, session markers, or local states
+    localStorage.removeItem('adminToken');
+    localStorage.removeItem('adminUser');
+    sessionStorage.clear();
+
+    console.log("🔒 [Admin Auth]: Session terminated. Redirecting to login...");
+
+    // Redirect to the admin login page
+    window.location.href = 'login.html';
+}
+
+// Attach globally if needed
+window.handleAdminLogout = handleAdminLogout;
